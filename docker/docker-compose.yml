@@ -1,0 +1,12 @@
+services:
+  postgres:
+    image: postgres:16.4
+    restart: always
+    environment:
+      POSTGRES_DB: parkinglot_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: endava123
+    ports:
+      - "5432:5432"
+    volumes:
+      - /pgdata:/var/lib/postgresql/data

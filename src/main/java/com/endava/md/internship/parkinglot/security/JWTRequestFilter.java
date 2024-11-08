@@ -60,11 +60,11 @@ public class JWTRequestFilter extends OncePerRequestFilter {
 
     private void setUserAuthentication(final HttpServletRequest request, final User user,
                                        final List<SimpleGrantedAuthority> permissions) {
-            UsernamePasswordAuthenticationToken usernamePasswordAuthToken = new UsernamePasswordAuthenticationToken(
-                    user.getEmail(), permissions);
-            usernamePasswordAuthToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        UsernamePasswordAuthenticationToken usernamePasswordAuthToken = new UsernamePasswordAuthenticationToken(
+                user.getEmail(), permissions);
+        usernamePasswordAuthToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthToken);
-            logger.debug("User set into SecurityContextHolder, token authentication success");
+        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthToken);
+        logger.debug("User set into SecurityContextHolder, token authentication success");
     }
 }

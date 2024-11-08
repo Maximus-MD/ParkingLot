@@ -17,7 +17,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
         response.setHeader("Content-Type", "application/json");
-        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, String.valueOf(new RegistrationResponseDto(
+        response.sendError(HttpServletResponse.SC_OK, String.valueOf(new RegistrationResponseDto(
                 false, null, Set.of(Integer.valueOf(authException.getMessage())))));
     }
 }

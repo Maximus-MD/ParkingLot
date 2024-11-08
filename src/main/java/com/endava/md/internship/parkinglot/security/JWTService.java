@@ -3,6 +3,7 @@ package com.endava.md.internship.parkinglot.security;
 import com.endava.md.internship.parkinglot.model.User;
 import com.endava.md.internship.parkinglot.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,6 @@ public class JWTService {
 
     protected User findUserByEmail(final String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException ("4033"));
+                .orElseThrow(() -> new AccessDeniedException("4033"));
     }
 }

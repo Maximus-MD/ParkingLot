@@ -76,14 +76,14 @@ public class JWTUtils {
     }
 
     private boolean isTokenExpired(final SignedJWT signedJWT) throws ParseException {
-            Date currentDate = new Date();
+        Date currentDate = new Date();
 
-            return currentDate.before(signedJWT.getJWTClaimsSet().getExpirationTime());
+        return currentDate.before(signedJWT.getJWTClaimsSet().getExpirationTime());
     }
 
     private boolean isTokenValid(final SignedJWT signedJWT) throws JOSEException {
-            JWSVerifier verifier = new MACVerifier(JWTUtils.ACCESS_SECRET_KEY);
+        JWSVerifier verifier = new MACVerifier(JWTUtils.ACCESS_SECRET_KEY);
 
-            return signedJWT.verify(verifier);
+        return signedJWT.verify(verifier);
     }
 }

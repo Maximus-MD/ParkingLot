@@ -1,7 +1,6 @@
 package com.endava.md.internship.parkinglot.service.impl;
 
 import com.endava.md.internship.parkinglot.dto.RegistrationRequestDto;
-
 import com.endava.md.internship.parkinglot.dto.RegistrationResponseDto;
 import com.endava.md.internship.parkinglot.exception.RegistrationException;
 import com.endava.md.internship.parkinglot.model.User;
@@ -12,11 +11,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
     private final UserRepository userRepository;
+
+    @Transactional
+    @Override
+    public RegistrationResponseDto registerNewUser(RegistrationRequestDto registrationDto) {
+        checkEmailAndPhoneAvailability(registrationDto);
+        User user = convertToUser(registrationDto);
+        userRepository.save(user);
+
+        return new RegistrationResponseDto(true, null, null);
+    }
 
     private void checkEmailAndPhoneAvailability(RegistrationRequestDto registrationDto) {
         if (userRepository.existsByEmail(registrationDto.email())) {
@@ -34,14 +41,5 @@ public class UserServiceImpl implements UserService {
                 .password(registrationDto.password())
                 .phone(registrationDto.phone())
                 .build();
-    }
-
-    @Override
-    public RegistrationResponseDto registerNewUser(RegistrationRequestDto registrationDto) {
-        checkEmailAndPhoneAvailability(registrationDto);
-        User user = convertToUser(registrationDto);
-        userRepository.save(user);
-
-        return new RegistrationResponseDto(true, null, null);
     }
 }

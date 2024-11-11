@@ -1,13 +1,15 @@
 package com.endava.md.internship.parkinglot.exception;
 
+import com.endava.md.internship.parkinglot.dto.LoginResponseDto;
 import com.endava.md.internship.parkinglot.dto.RegistrationResponseDto;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashSet;
@@ -15,7 +17,25 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
+@Slf4j
+@PropertySource("classpath:validation-errors.properties")
 public class CustomExceptionHandler {
+
+    @Value("${message.jwt-generation-error}")
+    int JWT_TOKEN_GENERATION_ERROR;
+
+    @Value("${message.bad.credentials}")
+    int BAD_CREDENTIALS;
+
+    @Value("${message.user-not-found}")
+    int USER_NOT_FOUND;
+
+    @Value("${message.invalid-jwt}")
+    int INVALID_JWT;
+
+    @Value("${message.server-error}")
+    int SERVER_ERROR;
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<RegistrationResponseDto> handleValidationExceptions(MethodArgumentNotValidException exception) {
         Set<String> errors = new HashSet<>();
@@ -25,32 +45,29 @@ public class CustomExceptionHandler {
         return ResponseEntity.ok(responseDto);
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<RegistrationResponseDto> handAccessDeniedException(AccessDeniedException accessDeniedException) {
-        RegistrationResponseDto responseDto = new RegistrationResponseDto(false, null,
-                Set.of(Integer.valueOf(accessDeniedException.getMessage())));
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
-    }
+    @ExceptionHandler(CustomAuthException.class)
+    public ResponseEntity<LoginResponseDto> handleCustomAuthException(final CustomAuthException authException) {
+        log.error(authException.getMessage());
+        return switch (authException.getAuthErrorType()) {
+            case JWT_TOKEN_GENERATION_ERROR -> buildResponseEntity(JWT_TOKEN_GENERATION_ERROR);
 
-    @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<RegistrationResponseDto> handAccessDeniedException(UsernameNotFoundException userNotFoundExp) {
-        RegistrationResponseDto responseDto = new RegistrationResponseDto(false, null,
-                Set.of(Integer.valueOf(userNotFoundExp.getMessage())));
-        return ResponseEntity.ok(responseDto);
+            case BAD_CREDENTIALS -> buildResponseEntity(BAD_CREDENTIALS);
+
+            case USER_NOT_FOUND -> buildResponseEntity(USER_NOT_FOUND);
+
+            case INVALID_JWT -> buildResponseEntity(INVALID_JWT);
+        };
     }
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<RegistrationResponseDto> handleGenericError() {
         RegistrationResponseDto responseDto = new RegistrationResponseDto(false, null,
-                Set.of(Integer.parseInt("{message.server-error}")));
+                Set.of(SERVER_ERROR));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
     }
 
-    @ExceptionHandler(RoleNotFoundException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<RegistrationResponseDto> handleRoleNotFoundException(RoleNotFoundException roleNotFoundExp) {
-        RegistrationResponseDto responseDto = new RegistrationResponseDto(false, null,
-                Set.of(Integer.valueOf(roleNotFoundExp.getMessage())));
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
+    private ResponseEntity<LoginResponseDto> buildResponseEntity(final Integer error) {
+        LoginResponseDto loginResponseDto = new LoginResponseDto(false, null, Set.of(error));
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(loginResponseDto);
     }
 }

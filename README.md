@@ -9,7 +9,7 @@ Make sure you have Docker installed on your machine. If not, you can download it
 Run the following command to pull the PostgreSQL 16.4 image:
 
 ```
-docker pull postgres:16.4
+sudo docker pull postgres:16.4
 ```
 
 ### Starting PostgreSQL Container

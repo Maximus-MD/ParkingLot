@@ -47,8 +47,7 @@ public class JWTRequestFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-
-    protected String authorizationHeaderExtractor(HttpServletRequest request) {
+    private String authorizationHeaderExtractor(final HttpServletRequest request) {
         String authorizationHeader = request.getHeader(HEADER);
         log.debug("Authorization header: {}", authorizationHeader);
 

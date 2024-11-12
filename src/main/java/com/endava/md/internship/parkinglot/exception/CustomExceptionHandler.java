@@ -7,6 +7,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashSet;
@@ -42,6 +43,14 @@ public class CustomExceptionHandler {
     public ResponseEntity<RegistrationResponseDto> handleGenericError() {
         RegistrationResponseDto responseDto = new RegistrationResponseDto(false, null,
                 Set.of(Integer.parseInt("{message.server-error}")));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
+    }
+
+    @ExceptionHandler(RoleNotFoundException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<RegistrationResponseDto> handleRoleNotFoundException(RoleNotFoundException roleNotFoundExp) {
+        RegistrationResponseDto responseDto = new RegistrationResponseDto(false, null,
+                Set.of(Integer.valueOf(roleNotFoundExp.getMessage())));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
     }
 }

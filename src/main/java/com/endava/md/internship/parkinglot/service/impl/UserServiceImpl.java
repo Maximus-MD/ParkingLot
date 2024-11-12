@@ -3,17 +3,26 @@ package com.endava.md.internship.parkinglot.service.impl;
 import com.endava.md.internship.parkinglot.dto.RegistrationRequestDto;
 import com.endava.md.internship.parkinglot.dto.RegistrationResponseDto;
 import com.endava.md.internship.parkinglot.exception.RegistrationException;
+import com.endava.md.internship.parkinglot.exception.RoleNotFoundException;
+import com.endava.md.internship.parkinglot.model.Role;
 import com.endava.md.internship.parkinglot.model.User;
+import com.endava.md.internship.parkinglot.repository.RoleRepository;
 import com.endava.md.internship.parkinglot.repository.UserRepository;
+import com.endava.md.internship.parkinglot.security.JWTService;
 import com.endava.md.internship.parkinglot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.endava.md.internship.parkinglot.model.RoleEnum.ROLE_REGULAR;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final JWTService jwtService;
 
     @Transactional
     @Override
@@ -22,7 +31,8 @@ public class UserServiceImpl implements UserService {
         User user = convertToUser(registrationDto);
         userRepository.save(user);
 
-        return new RegistrationResponseDto(true, null, null);
+        String generateToken = jwtService.generateToken(registrationDto.email());
+        return new RegistrationResponseDto(true, generateToken, null);
     }
 
     private void checkEmailAndPhoneAvailability(RegistrationRequestDto registrationDto) {
@@ -34,12 +44,20 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    private Role getDefaultRole() {
+        return roleRepository.findByName(ROLE_REGULAR)
+                .orElseThrow(() -> new RoleNotFoundException("No role found"));
+    }
+
     private User convertToUser(RegistrationRequestDto registrationDto) {
+        Role role = getDefaultRole();
+
         return User.builder()
                 .name(registrationDto.name())
                 .email(registrationDto.email())
                 .password(registrationDto.password())
                 .phone(registrationDto.phone())
+                .role(role)
                 .build();
     }
 }

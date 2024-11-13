@@ -5,4 +5,5 @@ import com.endava.md.internship.parkinglot.dto.RegistrationResponseDto;
 
 public interface UserService {
     RegistrationResponseDto registerNewUser(RegistrationRequestDto registrationDto);
+    void switchRole(Long userId);
 }

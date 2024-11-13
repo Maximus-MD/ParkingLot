@@ -29,6 +29,8 @@ import static com.endava.md.internship.parkinglot.exception.AuthErrorTypeEnum.JW
 @Component
 public class JWTUtils {
 
+    private static final String ROLE = "role";
+
     private static final String TOKEN_TYPE = "token_type";
     private static final String TOKEN_TYPE_VALUE = "access";
 
@@ -52,13 +54,14 @@ public class JWTUtils {
         }
     }
 
-    protected String generateAccessToken(final String email) {
+    protected String generateAccessToken(final String email, final String role) {
         try {
             JWSSigner signer = new MACSigner(ACCESS_SECRET_KEY);
             JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                     .subject(email)
                     .expirationTime(new Date(System.currentTimeMillis() + EXPIRATION_RATE.toMillis()))
                     .claim(TOKEN_TYPE, TOKEN_TYPE_VALUE)
+                    .claim(ROLE, role)
                     .build();
 
             SignedJWT signedJWT = new SignedJWT(new JWSHeader(jwsAlgorithm), claimsSet);

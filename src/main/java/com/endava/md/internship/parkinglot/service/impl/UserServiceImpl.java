@@ -11,6 +11,7 @@ import com.endava.md.internship.parkinglot.repository.UserRepository;
 import com.endava.md.internship.parkinglot.security.JWTService;
 import com.endava.md.internship.parkinglot.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final JWTService jwtService;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     @Override
@@ -55,7 +58,7 @@ public class UserServiceImpl implements UserService {
         return User.builder()
                 .name(registrationDto.name())
                 .email(registrationDto.email())
-                .password(registrationDto.password())
+                .password(passwordEncoder.encode(registrationDto.password()))
                 .phone(registrationDto.phone())
                 .role(role)
                 .build();

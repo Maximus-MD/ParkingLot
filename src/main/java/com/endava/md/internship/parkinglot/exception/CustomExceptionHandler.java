@@ -75,11 +75,7 @@ public class CustomExceptionHandler {
     public ResponseEntity<RegistrationResponseDto> handleRegistrationException(RegistrationException exception) {
         log.error("Registration error: {}", exception.getMessage(), exception);
 
-        int errorCode = switch (exception.getMessage()) {
-            case "Duplicate email" -> 3001;
-            case "Duplicate phone" -> 3002;
-            default -> 5001;
-        };
+        int errorCode = exception.getErrorCode();
 
         RegistrationResponseDto responseDto = new RegistrationResponseDto(false, null, Set.of(errorCode));
         return ResponseEntity.ok(responseDto);

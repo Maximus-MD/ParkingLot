@@ -58,7 +58,7 @@ class RegistrationControllerTest {
     }
 
     @Test
-    void shouldReturnSuccessWhenRegistrationIsSuccessful() throws Exception {
+    void shouldReturnOkStatusWithResponseWhenRegistrationIsSuccessful() throws Exception {
         RegistrationRequestDto requestDto = new RegistrationRequestDto(
                 "TestUser",
                 "unique@endava.com",

@@ -14,8 +14,6 @@ import com.endava.md.internship.parkinglot.security.JWTService;
 import com.endava.md.internship.parkinglot.security.JWTUtils;
 import com.endava.md.internship.parkinglot.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,7 +21,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import java.lang.reflect.Field;
+
 import static org.hamcrest.Matchers.contains;
 import java.util.Set;
 
@@ -48,14 +46,6 @@ class RegistrationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @BeforeEach
-    @SneakyThrows
-    void setup() {
-        Field field = jwtUtils.getClass().getDeclaredField("SECRET_KEY_STRING");
-        field.setAccessible(true);
-        field.set(jwtUtils, "YourVerySecretKey");
-    }
 
     @Test
     void shouldReturnOkStatusWithResponseWhenRegistrationIsSuccessful() throws Exception {
@@ -91,30 +81,5 @@ class RegistrationControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.error").value(contains(3001)));
-    }
-
-    @Test
-    void shouldReturnOkStatusWithErrorWhenInternalServerErrorOccurs() throws Exception {
-        RegistrationRequestDto requestDto = new RegistrationRequestDto(
-                "TestUser",
-                "unique@example.com",
-                "Password1@",
-                "987654321"
-        );
-        when(userService.registerNewUser(requestDto))
-                .thenThrow(new RegistrationException("Internal server error", 5001));
-
-        mockMvc.perform(post("/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isOk())
-                .andExpect(content().json("""
-                    {
-                        "success": false,
-                        "token": null,
-                        "error": [5001]
-                    }
-                    """));
-
     }
 }

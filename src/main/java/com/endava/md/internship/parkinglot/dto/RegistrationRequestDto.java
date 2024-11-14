@@ -21,7 +21,7 @@ public record RegistrationRequestDto(
 
         @NotBlank(message = "{message.weak-password}")
         @Size(min = 5, max = 10, message = "{message.weak-password}")
-        @Pattern(regexp = "^(?=.*[0-9])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).*", message = "{message.weak-password}")
+        @Pattern(regexp = "^(?=.*[0-9])(?=.*[A-Z])(?=.*[^\\w\\d\\s])(?=\\S+$).*", message = "{message.weak-password}")
         String password,
 
         @NotBlank(message = "{message.invalid-phone}")

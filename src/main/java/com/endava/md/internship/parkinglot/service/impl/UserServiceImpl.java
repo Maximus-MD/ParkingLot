@@ -2,17 +2,20 @@ package com.endava.md.internship.parkinglot.service.impl;
 
 import com.endava.md.internship.parkinglot.dto.RegistrationRequestDto;
 import com.endava.md.internship.parkinglot.dto.RegistrationResponseDto;
+import com.endava.md.internship.parkinglot.dto.RoleSwitchResponseDto;
 import com.endava.md.internship.parkinglot.exception.CustomAuthException;
-import com.endava.md.internship.parkinglot.exception.CustomEmailSendException;
+import com.endava.md.internship.parkinglot.exception.EmailSendException;
 import com.endava.md.internship.parkinglot.exception.RegistrationException;
 import com.endava.md.internship.parkinglot.exception.RoleNotFoundException;
 import com.endava.md.internship.parkinglot.model.Role;
+import com.endava.md.internship.parkinglot.model.RoleEnum;
 import com.endava.md.internship.parkinglot.model.User;
 import com.endava.md.internship.parkinglot.repository.RoleRepository;
 import com.endava.md.internship.parkinglot.repository.UserRepository;
 import com.endava.md.internship.parkinglot.security.JWTService;
-import com.endava.md.internship.parkinglot.service.EmailService;
+import com.endava.md.internship.parkinglot.service.EmailSenderService;
 import com.endava.md.internship.parkinglot.service.UserService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
     private final JWTService jwtService;
 
-    private final EmailService emailService;
+    private final EmailSenderService emailService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -47,39 +50,50 @@ public class UserServiceImpl implements UserService {
         return new RegistrationResponseDto(true, generateToken, null);
     }
 
-    public void setNewRole(final String email) {
-        final String mailTo = "maximilian.stati@endava.com";
-        final String subject = "Role change notification.";
+    @Transactional
+    public RoleSwitchResponseDto setNewRole(final String email, final RoleEnum role) {
         final String DEPRIVED = "You have been deprived of Admin role for Parking Lot app.";
         final String GRANTED = "You have been granted an Admin role for Parking Lot app.";
 
-        userRepository.findByEmail(email).stream()
-                .peek(userEntity -> {
-                    Role role = userEntity.getRole();
-                    userEntity.setRole(switchRole(role));
-                    userRepository.save(userEntity);
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new CustomAuthException(USER_NOT_FOUND, String.format("User with email %s not found", email)));
 
-                    String messageText = userEntity.getRole().getRoleName().name()
-                            .equals(ROLE_REGULAR.name()) ? DEPRIVED : GRANTED;
-                    try {
-                        emailService.sendEmail(mailTo, subject, messageText);
-                    } catch (Exception e) {
-                        throw new CustomEmailSendException("Failed to send email to " + mailTo);
-                    }
-                })
-                .findAny()
-                .orElseThrow(() -> new CustomAuthException(USER_NOT_FOUND,
-                        String.format("User email: %s not found", email)));
+        if(user.getRole().getRoleName() == role){
+            return new RoleSwitchResponseDto(email, true, user.getRole().getRoleName().name());
+        }
+
+        Role newRole = switchRole(user);
+        user.setRole(newRole);
+
+        String message = newRole.getRoleName().name()
+                .equals(ROLE_REGULAR.name()) ? DEPRIVED : GRANTED;
+        sendRoleChangeEmail(email, message);
+
+        return new RoleSwitchResponseDto(email, true, newRole.getRoleName().name());
     }
 
-
-    private Role switchRole(Role role) {
-        switch (role.getRoleName()) {
-            case ROLE_ADMIN -> role.setRoleName(ROLE_REGULAR);
-
-            case ROLE_REGULAR -> role.setRoleName(ROLE_ADMIN);
+    private void sendRoleChangeEmail(String mailTo, String message) {
+        try {
+            emailService.sendEmail(mailTo, "Role change notification.", message);
+        } catch (MessagingException e) {
+            throw new EmailSendException("Failed to send email to " + mailTo);
         }
-        return role;
+    }
+
+    @Transactional
+    protected Role switchRole(User user) {
+        if (user.getRole().getRoleName().equals(ROLE_REGULAR)) {
+            user.setRole(getRoleByName(ROLE_ADMIN));
+        } else {
+            user.setRole(getRoleByName(ROLE_REGULAR));
+        }
+
+        return user.getRole();
+    }
+
+    private Role getRoleByName(RoleEnum roleName) {
+        return roleRepository.findByRoleName(roleName)
+                .orElseThrow(() -> new RoleNotFoundException(roleName.name()));
     }
 
     private void checkEmailAndPhoneAvailability(RegistrationRequestDto registrationDto) {

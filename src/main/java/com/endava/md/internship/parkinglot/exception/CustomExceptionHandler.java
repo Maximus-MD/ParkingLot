@@ -59,16 +59,19 @@ public class CustomExceptionHandler {
         };
     }
 
-    @ExceptionHandler(Throwable.class)
-    public ResponseEntity<RegistrationResponseDto> handleGenericError() {
+    @ExceptionHandler(RoleNotFoundException.class)
+    public ResponseEntity<RegistrationResponseDto> handleRoleNotFoundException() {
         RegistrationResponseDto responseDto = new RegistrationResponseDto(false, null,
                 Set.of(SERVER_ERROR));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
     }
 
-    private ResponseEntity<LoginResponseDto> buildResponseEntity(final Integer error) {
-        LoginResponseDto loginResponseDto = new LoginResponseDto(false, null, Set.of(error));
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(loginResponseDto);
+    @ExceptionHandler(EmailSendException.class)
+    public ResponseEntity<RegistrationResponseDto> handleEmailSendException() {
+        RegistrationResponseDto responseDto = new RegistrationResponseDto(false, null,
+                Set.of(SERVER_ERROR));
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
     }
 
     @ExceptionHandler(RegistrationException.class)
@@ -79,5 +82,17 @@ public class CustomExceptionHandler {
 
         RegistrationResponseDto responseDto = new RegistrationResponseDto(false, null, Set.of(errorCode));
         return ResponseEntity.ok(responseDto);
+    }
+
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<RegistrationResponseDto> handleGenericError() {
+        RegistrationResponseDto responseDto = new RegistrationResponseDto(false, null,
+                Set.of(SERVER_ERROR));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
+    }
+
+    private ResponseEntity<LoginResponseDto> buildResponseEntity(final Integer error) {
+        LoginResponseDto loginResponseDto = new LoginResponseDto(false, null, Set.of(error));
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(loginResponseDto);
     }
 }

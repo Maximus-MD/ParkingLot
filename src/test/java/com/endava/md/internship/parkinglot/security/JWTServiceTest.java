@@ -3,6 +3,7 @@ package com.endava.md.internship.parkinglot.security;
 import com.endava.md.internship.parkinglot.exception.CustomAuthException;
 import com.endava.md.internship.parkinglot.model.User;
 import com.endava.md.internship.parkinglot.repository.UserRepository;
+import com.endava.md.internship.parkinglot.utils.RoleUtils;
 import com.endava.md.internship.parkinglot.utils.TokenUtils;
 import com.endava.md.internship.parkinglot.utils.UserUtils;
 import org.junit.jupiter.api.Test;
@@ -34,9 +35,11 @@ public class JWTServiceTest {
     void generateTokenTest_WhenSuccess_ReturnsToken() {
         String token = TokenUtils.getPreparedToken();
         String email = UserUtils.getPreparedEmail();
+        String role = RoleUtils.getPreparedRoleName();
+        User user = UserUtils.getPreparedUser();
 
-        when(userRepository.existsByEmail(email)).thenReturn(true);
-        when(jwtUtils.generateAccessToken(email)).thenReturn(token);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(jwtUtils.generateAccessToken(email, role)).thenReturn(token);
 
         String resultToken = jwtService.generateToken(email);
 
@@ -45,14 +48,15 @@ public class JWTServiceTest {
 
     @Test
     void generateTokenTest_WhenUserRepositoryReturnsFalse_ThrowsCustomAuthException() {
+        User user = UserUtils.getPreparedUser();
         String email = UserUtils.getPreparedEmail();
 
-        when(userRepository.existsByEmail(email)).thenReturn(false);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
         CustomAuthException customAuthException = assertThrows(CustomAuthException.class, () ->
                 jwtService.generateToken(email));
 
-        assertEquals(customAuthException.getAuthErrorType(), USER_NOT_FOUND);
+        assertEquals(USER_NOT_FOUND, customAuthException.getAuthErrorType());
         assertEquals(customAuthException.getMessage(), String.format("User email: %s not found", email));
     }
 
@@ -76,7 +80,7 @@ public class JWTServiceTest {
         CustomAuthException customAuthException = assertThrows(CustomAuthException.class, () ->
                 jwtService.findUserByEmail(email));
 
-        assertEquals(customAuthException.getAuthErrorType(), USER_NOT_FOUND);
+        assertEquals(USER_NOT_FOUND, customAuthException.getAuthErrorType());
         assertEquals(customAuthException.getMessage(), String.format("User email: %s not found", email));
     }
 }

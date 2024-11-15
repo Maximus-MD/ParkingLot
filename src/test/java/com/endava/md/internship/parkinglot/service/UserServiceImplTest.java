@@ -95,8 +95,8 @@ class UserServiceImplTest {
         when(userRepository.existsByPhone(requestDto.phone())).thenReturn(false);
 
         Role regularRole = new Role();
-        regularRole.setName(RoleEnum.ROLE_REGULAR);
-        when(roleRepository.findByName(RoleEnum.ROLE_REGULAR)).thenReturn(Optional.of(regularRole));
+        regularRole.setRoleName(RoleEnum.ROLE_REGULAR);
+        when(roleRepository.findByRoleName(RoleEnum.ROLE_REGULAR)).thenReturn(Optional.of(regularRole));
 
         User newUser = new User(null, "TestUser", "unique@example.com", passwordEncoder.encode("Password1@"), "987654321", regularRole);
         when(userRepository.save(any(User.class))).thenReturn(newUser);

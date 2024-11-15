@@ -42,7 +42,11 @@ public class JWTRequestFilter extends OncePerRequestFilter {
 
             String email = jwtUtils.extractSubject(token);
             User user = jwtService.findUserByEmail(email);
-            setUserAuthentication(request, user, new ArrayList<>());
+
+            List<SimpleGrantedAuthority> authorities = List.of(
+                    new SimpleGrantedAuthority(user.getRole().getRoleName().name()));
+
+            setUserAuthentication(request, user,authorities);
         }
         filterChain.doFilter(request, response);
     }

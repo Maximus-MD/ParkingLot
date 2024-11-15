@@ -6,8 +6,6 @@ import com.endava.md.internship.parkinglot.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 import static com.endava.md.internship.parkinglot.exception.AuthErrorTypeEnum.USER_NOT_FOUND;
 
 @Service
@@ -19,9 +17,11 @@ public class JWTService {
     private final JWTUtils jwtUtils;
 
     public String generateToken(final String email) {
-        return Optional.ofNullable(email)
-                .filter(userRepository::existsByEmail)
-                .map(jwtUtils::generateAccessToken)
+        return userRepository.findByEmail(email)
+                .map(userEntity -> {
+                    String role = userEntity.getRole().getRoleName().name();
+                    return jwtUtils.generateAccessToken(email, role);
+                })
                 .orElseThrow(() ->
                         new CustomAuthException(USER_NOT_FOUND, String.format("User email: %s not found", email)));
     }

@@ -46,7 +46,7 @@ public class PasswordRestorationServiceImpl implements PasswordRestorationServic
         String subject = "Password restoration";
         String message = "Your password has been reset. Here is your new password: " + password;
         emailSenderService.sendEmail(email, subject, message);
-        user.setPassword(passwordEncoder.encode(password)); // doesn't work now because in database check constraint <=10
+        user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
     }
 

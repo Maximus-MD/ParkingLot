@@ -32,7 +32,8 @@ public class GlobalSecurityFilterConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
-                                HttpMethod.POST, "/register", "/login", "/restore-password").permitAll()
+                                HttpMethod.POST, "/register", "/login").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/restore-password").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(handler -> handler

@@ -6,7 +6,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +22,7 @@ public class PasswordRestorationController {
         this.passwordRestorationService = passwordRestorationService;
     }
 
-    @PostMapping
+    @PatchMapping
     public ResponseEntity<SuccessfulResponse> passwordRestoration(@Valid @RequestBody UserEmail userEmail) throws MessagingException {
         passwordRestorationService.restorePassword(userEmail.email);
         return ResponseEntity.ok(new SuccessfulResponse("success"));

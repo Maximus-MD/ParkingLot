@@ -73,7 +73,7 @@ class PasswordRestorationServiceTest {
         when(userRepository.findByEmail(recipientEmail)).thenReturn(Optional.of(UserUtils.getPreparedUser()));
         doThrow(new MessagingException()).when(emailSenderService).sendEmail(anyString(), anyString(), anyString());
 
-        assertThrows(RuntimeException.class, () -> passwordRestorationService.restorePassword(recipientEmail));
+        assertThrows(MessagingException.class, () -> passwordRestorationService.restorePassword(recipientEmail));
         verify(userRepository, times(1)).findByEmail(recipientEmail);
         verify(emailSenderService, times(1)).sendEmail(anyString(), anyString(), anyString());
     }

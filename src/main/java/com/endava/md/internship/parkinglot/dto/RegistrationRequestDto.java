@@ -2,7 +2,6 @@ package com.endava.md.internship.parkinglot.dto;
 
 import com.endava.md.internship.parkinglot.validation.annotation.UniqueEmail;
 import com.endava.md.internship.parkinglot.validation.annotation.UniquePhone;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -15,7 +14,7 @@ public record RegistrationRequestDto(
         String name,
 
         @NotBlank(message ="{message.invalid-email}" )
-        @Email(message = "{message.invalid-email}")
+        @Pattern(regexp = "^[a-zA-Z0-9]+(?:[._][a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:[.-][a-zA-Z0-9]+)*\\.[a-zA-Z]{2,}$", message = "{message.invalid-email}")
         @UniqueEmail
         String email,
 

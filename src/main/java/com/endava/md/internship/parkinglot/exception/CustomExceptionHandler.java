@@ -70,4 +70,14 @@ public class CustomExceptionHandler {
         LoginResponseDto loginResponseDto = new LoginResponseDto(false, null, Set.of(error));
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(loginResponseDto);
     }
+
+    @ExceptionHandler(RegistrationException.class)
+    public ResponseEntity<RegistrationResponseDto> handleRegistrationException(RegistrationException exception) {
+        log.error("Registration error: {}", exception.getMessage(), exception);
+
+        int errorCode = exception.getErrorCode();
+
+        RegistrationResponseDto responseDto = new RegistrationResponseDto(false, null, Set.of(errorCode));
+        return ResponseEntity.ok(responseDto);
+    }
 }

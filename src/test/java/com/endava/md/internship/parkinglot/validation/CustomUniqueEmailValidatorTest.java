@@ -13,8 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class
-CustomUniqueEmailValidatorTest {
+class CustomUniqueEmailValidatorTest {
 
     @Mock
     private UserRepository userRepository;

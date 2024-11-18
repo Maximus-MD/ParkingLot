@@ -1,0 +1,7 @@
+package com.endava.md.internship.parkinglot.service;
+
+import jakarta.mail.MessagingException;
+
+public interface EmailSenderService {
+    void sendEmail(String recipient, String subject, String body) throws MessagingException;
+}

@@ -33,6 +33,7 @@ public class GlobalSecurityFilterConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 HttpMethod.POST, "/register", "/login").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/restore-password").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(handler -> handler

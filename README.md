@@ -34,3 +34,8 @@ mvn flyway:migrate
 This command will look for migration scripts in the default db/migration folder (inside src/main/resources by default) 
 and apply them to the configured database. Ensure your database configuration in application.properties 
 or application.yml matches the target environment.
+
+### Current project status
+[![Quality Gate Status](https://sonar.azure1.mddinternship.com/api/project_badges/measure?project=com.endava.md.internship%3Aparkinglot&metric=alert_status&token=sqb_bff22d632cba9167a8001e1bbeab8cde98d548cf)](https://sonar.azure1.mddinternship.com/dashboard?id=com.endava.md.internship%3Aparkinglot)
+
+[![Reliability Rating](https://sonar.azure1.mddinternship.com/api/project_badges/measure?project=com.endava.md.internship%3Aparkinglot&metric=reliability_rating&token=sqb_bff22d632cba9167a8001e1bbeab8cde98d548cf)](https://sonar.azure1.mddinternship.com/dashboard?id=com.endava.md.internship%3Aparkinglot)

@@ -12,6 +12,7 @@ variables:
   NEXUS_USER: "${Nexus_REPO_USER}" 
   NEXUS_PASSWORD: "${Nexus_REPO_PASS}"
   SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+  SONAR_PROJECT_KEY: "${SONAR_PROJECT_KEY}"
   GIT_DEPTH: "0"
 
 cache:
@@ -49,12 +50,11 @@ analyze:
   stage: analyze
   image: maven:3-eclipse-temurin-17
   variables:
-    MAVEN_OPTS: "-Dsonar.projectKey=your-project-key -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
+    MAVEN_OPTS: "-Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.token=${SONAR_TOKEN}"
   script:
     - ./mvnw $MAVEN_CLI_OPTS clean install
     - echo "Running SonarQube analysis"
     - ls target/classes
-    # - mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
     - ./mvnw $MAVEN_CLI_OPTS -X sonar:sonar -Dsonar.java.binaries=target/classes
   dependencies:
     - build
@@ -65,7 +65,7 @@ deploy:
   script:
     - echo "Deploying artifacts to Nexus"
     - |
-      curl -u $NEXUS_USER:$NEXUS_PASSWORD \
+      curl -v -u $NEXUS_USER:$NEXUS_PASSWORD \
         --upload-file target/*.jar \
         "$NEXUS_URL/$(basename target/*.jar)"
   dependencies:

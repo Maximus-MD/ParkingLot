@@ -6,7 +6,7 @@ stages:
 
 variables:
   MAVEN_IMAGE: "maven:3.8.7-openjdk-18"
-  MAVEN_CLI_OPTS: "-B -Dmaven.test.failure.ignore=true"
+  MAVEN_CLI_OPTS: "-B -Dmaven.test.failure.ignore=false"  # Set to not ignore test failures
   MAVEN_CACHE_DIR: ".m2/repository"
   NEXUS_URL: "${Nexus_REPO_URL}"
   NEXUS_USER: "${Nexus_REPO_USER}" 

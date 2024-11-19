@@ -51,7 +51,9 @@ analyze:
   variables:
     MAVEN_OPTS: "-Dsonar.projectKey=your-project-key -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
   script:
+    - ./mvnw $MAVEN_CLI_OPTS clean install
     - echo "Running SonarQube analysis"
+    - ls target/classes
     # - mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
     - ./mvnw $MAVEN_CLI_OPTS -X sonar:sonar -Dsonar.java.binaries=target/classes
   dependencies:

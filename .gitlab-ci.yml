@@ -62,11 +62,18 @@ deploy:
   stage: deploy
   image: curlimages/curl:latest
   script:
+    - echo "Parsing POM file..."
+    - GROUP_ID=$(xmllint --xpath "string(//project/groupId)" pom.xml)
+    - ARTIFACT_ID=$(xmllint --xpath "string(//project/artifactId)" pom.xml)
+    - VERSION=$(xmllint --xpath "string(//project/version)" pom.xml)
+    - echo "Group ID $GROUP_ID"
+    - echo "Artifact ID $ARTIFACT_ID"
+    - echo "Version $VERSION"
     - echo "Deploying artifacts to Nexus"
     - |
       curl -v -u $NEXUS_USER:$NEXUS_PASSWORD \
-        --upload-file target/*.jar \
-        "$NEXUS_URL/$(basename target/*.jar)"
+        --upload-file "target/${ARTIFACT_ID}-${VERSION}.jar" \
+        "$NEXUS_URL/${GROUP_ID//.//}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.jar"
   dependencies:
     - build
   only:

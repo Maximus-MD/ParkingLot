@@ -18,6 +18,9 @@
 		<postgresql.version>42.7.3</postgresql.version>
 		<flyway-database-postgresql.version>10.10.0</flyway-database-postgresql.version>
 		<flyway-maven-plugin.version>10.10.0</flyway-maven-plugin.version>
+		<sonar.projectKey>parking-lot_java_backend_2024_084a37f7-ff29-4f31-833d-a9de75003f6d</sonar.projectKey>
+  		<sonar.projectName>Java_Backend_2024</sonar.projectName>
+  		<sonar.qualitygate.wait>true</sonar.qualitygate.wait>
 	</properties>
 	<dependencies>
 		<dependency>

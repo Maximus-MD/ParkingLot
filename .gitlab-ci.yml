@@ -9,8 +9,8 @@ variables:
   MAVEN_CLI_OPTS: "-B -Dmaven.test.failure.ignore=true"
   MAVEN_CACHE_DIR: ".m2/repository"
   NEXUS_URL: "${Nexus_REPO_URL}"
-  NEXUS_USER: "${Nexus_REPO_USER}" # Use a GitLab variable for security
-  NEXUS_PASSWORD: "${Nexus_REPO_PASS}" # Use a GitLab variable for security
+  NEXUS_USER: "${Nexus_REPO_USER}" 
+  NEXUS_PASSWORD: "${Nexus_REPO_PASS}"
   SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
   GIT_DEPTH: "0"
 
@@ -47,17 +47,10 @@ test:
 
 analyze:
   stage: analyze
-  # image: $MAVEN_IMAGE
   image: maven:3-eclipse-temurin-17
   script:
     - echo "Running SonarQube analysis"
-    # - mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
     - mvn sonar:sonar -Dsonar.projectKey=${SONAR_TOKEN} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.java.binaries=target/classes
-    # - ./mvnw sonar:sonar -Dsonar.projectKey=parking-lot-java -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN
-    - echo "Checking quality gate status"
-    # - |
-    #   STATUS=$(curl -s -u $SONAR_TOKEN: $SONAR_HOST_URL/api/qualitygates/project_status?projectKey=parking-lot-java | jq -r '.projectStatus.status')
-    #   if [ "$STATUS" != "OK" ]; then echo "Quality Gate failed: $STATUS"; exit 1; fi
   dependencies:
     - build
 
@@ -73,4 +66,4 @@ deploy:
   dependencies:
     - build
   only:
-    - master  # Change to the branch you want to deploy from
+    - master

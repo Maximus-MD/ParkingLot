@@ -49,11 +49,11 @@ analyze:
   stage: analyze
   image: maven:3-eclipse-temurin-17
   variables:
-    MAVEN_OPTS: "$MAVEN_CLI_OPTS -Dsonar.projectKey=your-project-key -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
+    MAVEN_OPTS: "-Dsonar.projectKey=your-project-key -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
   script:
     - echo "Running SonarQube analysis"
     # - mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
-    - ./mvnw -X sonar:sonar -Dsonar.java.binaries=target/classes
+    - ./mvnw $MAVEN_CLI_OPTS -X sonar:sonar -Dsonar.java.binaries=target/classes
   dependencies:
     - build
 

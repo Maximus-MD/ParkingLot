@@ -5,7 +5,7 @@ stages:
   - deploy
 
 variables:
-  MAVEN_IMAGE: "maven:3.8-openjdk-11"
+  MAVEN_IMAGE: "maven:3.8.7-openjdk-18"
   MAVEN_CLI_OPTS: "-B -Dmaven.test.failure.ignore=true"
   MAVEN_CACHE_DIR: ".m2/repository"
   # NEXUS_URL: "https://nexus.azure1.mddinternship.com/repository/maven-releases" # Replace with your Nexus repository URL

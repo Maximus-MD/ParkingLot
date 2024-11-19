@@ -29,14 +29,16 @@ import static com.endava.md.internship.parkinglot.exception.AuthErrorTypeEnum.JW
 @Component
 public class JWTUtils {
 
+    @Value("${JWT_SECRET_KEY_STRING}")
+    private String SECRET_KEY_STRING;
+    private SecretKey ACCESS_SECRET_KEY;
+
+    private static final String ROLE = "role";
+
     private static final String TOKEN_TYPE = "token_type";
     private static final String TOKEN_TYPE_VALUE = "access";
 
     private static final Duration EXPIRATION_RATE = Duration.ofDays(1);
-
-    @Value("${JWT_SECRET_KEY_STRING}")
-    private String SECRET_KEY_STRING;
-    private SecretKey ACCESS_SECRET_KEY;
 
     private static final JWSAlgorithm jwsAlgorithm = JWSAlgorithm.HS256;
 
@@ -52,19 +54,21 @@ public class JWTUtils {
         }
     }
 
-    protected String generateAccessToken(final String email) {
+    protected String generateAccessToken(final String email, final String role) {
         try {
             JWSSigner signer = new MACSigner(ACCESS_SECRET_KEY);
             JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                     .subject(email)
                     .expirationTime(new Date(System.currentTimeMillis() + EXPIRATION_RATE.toMillis()))
                     .claim(TOKEN_TYPE, TOKEN_TYPE_VALUE)
+                    .claim(ROLE, role)
                     .build();
 
             SignedJWT signedJWT = new SignedJWT(new JWSHeader(jwsAlgorithm), claimsSet);
             signedJWT.sign(signer);
             return signedJWT.serialize();
         } catch (Exception exception) {
+            log.error(exception.getMessage());
             throw new CustomAuthException(JWT_TOKEN_GENERATION_ERROR, exception.getMessage());
         }
     }
@@ -75,6 +79,7 @@ public class JWTUtils {
 
             return signedJWT.getJWTClaimsSet().getSubject();
         } catch (Exception exception) {
+            log.error(exception.getMessage());
             throw new CustomAuthException(INVALID_JWT, exception.getMessage());
         }
     }
@@ -85,6 +90,7 @@ public class JWTUtils {
 
             return isTokenExpired(signedJWT) && isTokenValid(signedJWT);
         } catch (ParseException | JOSEException exception) {
+            log.error(exception.getMessage());
             throw new CustomAuthException(INVALID_JWT, exception.getMessage());
         }
     }

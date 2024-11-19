@@ -8,7 +8,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -17,6 +19,8 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "roles")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,5 +29,9 @@ public class Role {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role_name")
-    private RoleEnum name;
+    private RoleEnum roleName;
+
+    public Role(RoleEnum roleName) {
+        this.roleName = roleName;
+    }
 }

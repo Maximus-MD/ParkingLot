@@ -63,7 +63,7 @@ deploy:
   image: curlimages/curl:latest
   script:
     - echo "Parsing POM file..."
-    - GROUP_ID=$(grep "<groupId>" pom.xml | head -n 1 | sed 's/.*<groupId>\(.*\)<\/groupId>.*/\1/')
+    - GROUP_ID=$(grep "internship<\/groupId>" pom.xml | head -n 1 | sed 's/.*<groupId>\(.*\)<\/groupId>.*/\1/')
     - ARTIFACT_ID=$(grep "<artifactId>" pom.xml | head -n 1 | sed 's/.*<artifactId>\(.*\)<\/artifactId>.*/\1/')
     - VERSION=$(grep "SNAPSHOT<\/version>" pom.xml | head -n 1 | sed 's/.*<version>\(.*\)<\/version>.*/\1/')
     - echo "Group ID $GROUP_ID"

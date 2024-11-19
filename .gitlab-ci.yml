@@ -1,0 +1,60 @@
+stages:
+  - build
+  - test
+  - analyze
+  - deploy
+
+variables:
+  MAVEN_CLI_OPTS: "-B -Dmaven.test.failure.ignore=true"
+  MAVEN_CACHE_DIR: ".m2/repository"
+  # NEXUS_URL: "https://nexus.azure1.mddinternship.com/repository/maven-releases" # Replace with your Nexus repository URL
+  NEXUS_URL: "${Nexus_REPO_URL}"
+  NEXUS_USER: "${Nexus_REPO_USER}" # Use a GitLab variable for security
+  NEXUS_PASSWORD: "${Nexus_REPO_PASS}" # Use a GitLab variable for security
+
+cache:
+  paths:
+    - $MAVEN_CACHE_DIR
+
+build:
+  stage: build
+  script:
+    - echo "Building the project"
+    - ./mvnw $MAVEN_CLI_OPTS clean package
+  artifacts:
+    paths:
+      - target/*.jar
+    expire_in: 1 week
+
+test:
+  stage: test
+  script:
+    - echo "Running tests"
+    - ./mvnw $MAVEN_CLI_OPTS test
+  dependencies:
+    - build
+
+analyze:
+  stage: analyze
+  script:
+    - echo "Running SonarQube analysis"
+    - ./mvnw sonar:sonar -Dsonar.projectKey=parking-lot-java -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN
+    - echo "Checking quality gate status"
+    - |
+      STATUS=$(curl -s -u $SONAR_TOKEN: $SONAR_HOST_URL/api/qualitygates/project_status?projectKey=parking-lot-java | jq -r '.projectStatus.status')
+      if [ "$STATUS" != "OK" ]; then echo "Quality Gate failed: $STATUS"; exit 1; fi
+  dependencies:
+    - build
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploying artifacts to Nexus"
+    - |
+      curl -u $NEXUS_USER:$NEXUS_PASSWORD \
+        --upload-file target/*.jar \
+        "$NEXUS_URL/$(basename target/*.jar)"
+  dependencies:
+    - build
+  only:
+    - master  # Change to the branch you want to deploy from

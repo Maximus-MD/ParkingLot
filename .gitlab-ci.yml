@@ -25,7 +25,7 @@ build:
   script:
     - echo "Building the project"
     - echo "JAVA_HOME is $JAVA_HOME"
-    - ./mvnw $MAVEN_CLI_OPTS clean package
+    - ./mvnw -e -X $MAVEN_CLI_OPTS clean package
   artifacts:
     paths:
       - target/*.jar
@@ -36,7 +36,7 @@ test:
   image: $MAVEN_IMAGE
   script:
     - echo "Running tests"
-    - ./mvnw $MAVEN_CLI_OPTS test
+    - ./mvnw -e -X $MAVEN_CLI_OPTS test
   dependencies:
     - build
   artifacts:

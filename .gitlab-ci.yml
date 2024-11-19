@@ -5,6 +5,7 @@ stages:
   - deploy
 
 variables:
+  MAVEN_IMAGE: "maven:3.8.5-openjdk-11"
   MAVEN_CLI_OPTS: "-B -Dmaven.test.failure.ignore=true"
   MAVEN_CACHE_DIR: ".m2/repository"
   # NEXUS_URL: "https://nexus.azure1.mddinternship.com/repository/maven-releases" # Replace with your Nexus repository URL
@@ -18,8 +19,10 @@ cache:
 
 build:
   stage: build
+  image: $MAVEN_IMAGE
   script:
     - echo "Building the project"
+    - echo "JAVA_HOME is $JAVA_HOME"
     - ./mvnw $MAVEN_CLI_OPTS clean package
   artifacts:
     paths:
@@ -28,6 +31,7 @@ build:
 
 test:
   stage: test
+  image: $MAVEN_IMAGE
   script:
     - echo "Running tests"
     - ./mvnw $MAVEN_CLI_OPTS test
@@ -36,6 +40,7 @@ test:
 
 analyze:
   stage: analyze
+  image: $MAVEN_IMAGE
   script:
     - echo "Running SonarQube analysis"
     - ./mvnw sonar:sonar -Dsonar.projectKey=parking-lot-java -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN
@@ -48,6 +53,7 @@ analyze:
 
 deploy:
   stage: deploy
+  image: curlimages/curl:latest
   script:
     - echo "Deploying artifacts to Nexus"
     - |

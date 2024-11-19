@@ -50,7 +50,7 @@ analyze:
   image: maven:3-eclipse-temurin-17
   script:
     - echo "Running SonarQube analysis"
-    - mvn sonar:sonar -Dsonar.projectKey=${SONAR_TOKEN} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.java.binaries=target/classes
+    - mvn sonar:sonar -Dsonar.projectKey=${SONAR_TOKEN} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.java.binaries=build/classes/java/main
   dependencies:
     - build
 

@@ -91,6 +91,8 @@ trigger_docker:
     strategy: depend
     forward:
       pipeline_variables: true
-
+      yaml_variables: true
+  variables:
+    VERSION: "$VERSION"
 
 

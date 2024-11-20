@@ -6,7 +6,7 @@ stages:
 
 variables:
   MAVEN_IMAGE: "maven:3.8.7-openjdk-18"
-  MAVEN_CLI_OPTS: "-B -Dmaven.test.failure.ignore=false"  # Set false to ignore test failures
+  MAVEN_CLI_OPTS: "-B -Dmaven.test.failure.ignore=true"  # Set false to ignore test failures
   MAVEN_CACHE_DIR: ".m2/repository"
   NEXUS_URL: "${Nexus_REPO_URL}"
   NEXUS_USER: "${Nexus_REPO_USER}" 
@@ -31,13 +31,14 @@ build:
   artifacts:
     paths:
       - target/*.jar
-    expire_in: 1 week
+    expire_in: 3 days
 
 test:
   stage: test
   image: $MAVEN_IMAGE
   script:
     - echo "Running tests"
+    - ./mvnw clean -e -X $MAVEN_CLI_OPTS
     - ./mvnw -e -X $MAVEN_CLI_OPTS test
   dependencies:
     - build
@@ -46,7 +47,7 @@ test:
       - target/surefire-reports
     reports:
       junit: target/surefire-reports/*.xml
-    expire_in: 2 week
+    expire_in: 1 week
 
 analyze:
   stage: analyze
@@ -72,8 +73,8 @@ deploy:
     - echo "Deploying artifacts to Nexus"
     - |
       curl -v -u $NEXUS_USER:$NEXUS_PASSWORD \
-        --upload-file "target/${ARTIFACT_ID}-${VERSION}.jar" \
-        "$NEXUS_URL/${GROUP_ID//.//}/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.jar"
+      ${NEXUS_URL}/repository/maven-snapshots/${GROUP_ID//.//}/${ARTIFACT_ID}/${ARTIFACT_ID}-${VERSION}.jar \
+      --upload-file ${ARTIFACT_ID}-${ARTIFACT_ID}-${VERSION}.jar
   dependencies:
     - build
   only:

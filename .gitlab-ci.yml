@@ -87,7 +87,7 @@ trigger_docker:
   stage: docker
   trigger:
     project: tooling/docker-packing
-    branch: "main"
+    branch: "java"
     strategy: depend
   variables:
     GROUP_ID: "${GROUP_ID}"

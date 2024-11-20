@@ -1,4 +1,5 @@
 stages:
+  - prepare
   - build
   - test
   - analyze
@@ -6,7 +7,6 @@ stages:
 
 variables:
   MAVEN_IMAGE: "maven:3.8.7-openjdk-18"
-  MAVEN_CLI_OPTS: "-B -Dmaven.test.failure.ignore=true"  # Set false to ignore test failures
   MAVEN_CACHE_DIR: ".m2/repository"
   NEXUS_URL: "${Nexus_REPO_URL}"
   NEXUS_USER: "${Nexus_REPO_USER}" 
@@ -21,6 +21,22 @@ cache:
   paths:
     - $MAVEN_CACHE_DIR
 
+.set-maven-cli-opts:
+  stage: prepare
+  script:
+    - echo "Evaluating MAVEN_CLI_OPTS based on commit message..."
+    - |
+      if echo "$CI_COMMIT_MESSAGE" | grep -iq "ciadmintest"; then
+        echo "MAVEN_CLI_OPTS=-B -Dmaven.test.failure.ignore=true" >> $GITLAB_ENV
+      else
+        echo "MAVEN_CLI_OPTS=-B -Dmaven.test.failure.ignore=false" >> $GITLAB_ENV
+      fi
+  rules:
+    - when: always
+  artifacts:
+    reports:
+      dotenv: .maven_cli_opts.env
+
 build:
   stage: build
   image: $MAVEN_IMAGE
@@ -33,7 +49,7 @@ build:
       - target/*.jar
     expire_in: 3 days
 
-test:
+maven_test:
   stage: test
   image: $MAVEN_IMAGE
   script:
@@ -49,7 +65,7 @@ test:
       junit: target/surefire-reports/*.xml
     expire_in: 1 week
 
-analyze:
+sonar_analyze:
   stage: analyze
   image: maven:3-eclipse-temurin-17
   variables:

@@ -1,5 +1,4 @@
 stages:
-  - prepare
   - build
   - test
   - analyze
@@ -21,21 +20,8 @@ cache:
   paths:
     - $MAVEN_CACHE_DIR
 
-set_maven_cli_opts:
-  stage: prepare
-  script:
-    - echo "Evaluating MAVEN_CLI_OPTS based on commit message..."
-    - |
-      if echo "$CI_COMMIT_MESSAGE" | grep -iq "ciadmintest"; then
-        echo "MAVEN_CLI_OPTS=\"-B -Dmaven.test.failure.ignore=true\"" >> $GITLAB_ENV
-      else
-        echo "MAVEN_CLI_OPTS=\"-B -Dmaven.test.failure.ignore=false\"" >> $GITLAB_ENV
-      fi
-  rules:
-    - when: always
-  artifacts:
-    reports:
-      dotenv: .maven_cli_opts.env
+include:
+  - local: '.gitlab-ci-script.yml'
 
 build:
   stage: build

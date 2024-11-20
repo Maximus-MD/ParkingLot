@@ -53,7 +53,7 @@ class UserServiceImplTest {
                 existingEmail,
                 "Password1@",
                 "123456789");
-        when(userRepository.existsByEmail(existingEmail)).thenReturn(true);
+        when(userRepository.existsByEmailIgnoreCase(existingEmail)).thenReturn(true);
 
         RegistrationException exception = assertThrows(RegistrationException.class, () -> {
             userService.registerNewUser(requestDto);
@@ -91,7 +91,7 @@ class UserServiceImplTest {
                 "Password1@",
                 "987654321"
         );
-        when(userRepository.existsByEmail(requestDto.email())).thenReturn(false);
+        when(userRepository.existsByEmailIgnoreCase(requestDto.email())).thenReturn(false);
         when(userRepository.existsByPhone(requestDto.phone())).thenReturn(false);
 
         Role regularRole = new Role();

@@ -39,7 +39,7 @@ public class PasswordRestorationServiceImpl implements PasswordRestorationServic
     @Override
     @Transactional(rollbackFor = MessagingException.class)
     public void restorePassword(String email) throws MessagingException {
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() ->
                         new CustomAuthException(USER_NOT_FOUND, String.format("User email: %s not found", email)));
         String password = generatePassword();
@@ -47,7 +47,6 @@ public class PasswordRestorationServiceImpl implements PasswordRestorationServic
         String message = "Your password has been reset. Here is your new password: " + password;
         emailSenderService.sendEmail(email, subject, message);
         user.setPassword(passwordEncoder.encode(password));
-        userRepository.save(user);
     }
 
     private String generatePassword() {

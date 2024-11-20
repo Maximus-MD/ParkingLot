@@ -41,27 +41,25 @@ class PasswordRestorationServiceTest {
     @Test
     void testPasswordRestorationService_userWithThatEmailDoesNOtExist_throwsRuntimeException() {
         String recipientEmail = "Alex@gmail.com";
-        when(userRepository.findByEmail(recipientEmail)).thenReturn(Optional.empty());
+        when(userRepository.findByEmailIgnoreCase(recipientEmail)).thenReturn(Optional.empty());
 
         assertThrows(CustomAuthException.class, () -> passwordRestorationService.restorePassword(recipientEmail));
-        verify(userRepository, times(1)).findByEmail(recipientEmail);
+        verify(userRepository, times(1)).findByEmailIgnoreCase(recipientEmail);
     }
 
     @Test
     void testRestorePassword_emailHasBeenSentSuccessfully_restoresPassword() throws MessagingException {
         String recipientEmail = "Alex@gmail.com";
         String password ="!A3fhgy";
-        when(userRepository.findByEmail(recipientEmail)).thenReturn(Optional.of(UserUtils.getPreparedUser()));
+        when(userRepository.findByEmailIgnoreCase(recipientEmail)).thenReturn(Optional.of(UserUtils.getPreparedUser()));
         when(passwordEncoder.encode(anyString())).thenReturn(password);
         User user = UserUtils.getPreparedUser();
         user.setPassword(password);
-        when(userRepository.save(user)).thenReturn(user);
         doNothing().when(emailSenderService).sendEmail(anyString(), anyString(), anyString());
 
         passwordRestorationService.restorePassword(recipientEmail);
 
-        verify(userRepository, times(1)).findByEmail(recipientEmail);
-        verify(userRepository, times(1)).save(user);
+        verify(userRepository, times(1)).findByEmailIgnoreCase(recipientEmail);
         verify(emailSenderService, times(1)).sendEmail(anyString(), anyString(), anyString());
         verify(passwordEncoder, times(1)).encode(anyString());
     }
@@ -70,11 +68,11 @@ class PasswordRestorationServiceTest {
     void testRestorePassword_errorSendingEmail_throwsRuntimeException() throws MessagingException {
         String recipientEmail = "Alex@gmail.com";
 
-        when(userRepository.findByEmail(recipientEmail)).thenReturn(Optional.of(UserUtils.getPreparedUser()));
+        when(userRepository.findByEmailIgnoreCase(recipientEmail)).thenReturn(Optional.of(UserUtils.getPreparedUser()));
         doThrow(new MessagingException()).when(emailSenderService).sendEmail(anyString(), anyString(), anyString());
 
         assertThrows(MessagingException.class, () -> passwordRestorationService.restorePassword(recipientEmail));
-        verify(userRepository, times(1)).findByEmail(recipientEmail);
+        verify(userRepository, times(1)).findByEmailIgnoreCase(recipientEmail);
         verify(emailSenderService, times(1)).sendEmail(anyString(), anyString(), anyString());
     }
 }

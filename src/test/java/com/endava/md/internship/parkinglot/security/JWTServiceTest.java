@@ -38,7 +38,7 @@ public class JWTServiceTest {
         String role = RoleUtils.getPreparedRoleName();
         User user = UserUtils.getPreparedUser();
 
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase(email)).thenReturn(Optional.of(user));
         when(jwtUtils.generateAccessToken(email, role)).thenReturn(token);
 
         String resultToken = jwtService.generateToken(email);
@@ -51,7 +51,7 @@ public class JWTServiceTest {
         User user = UserUtils.getPreparedUser();
         String email = UserUtils.getPreparedEmail();
 
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase(email)).thenReturn(Optional.of(user));
 
         CustomAuthException customAuthException = assertThrows(CustomAuthException.class, () ->
                 jwtService.generateToken(email));
@@ -65,7 +65,7 @@ public class JWTServiceTest {
         User user = UserUtils.getPreparedUser();
         String email = UserUtils.getPreparedEmail();
 
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase(email)).thenReturn(Optional.of(user));
 
         User resultUser = jwtService.findUserByEmail(email);
 

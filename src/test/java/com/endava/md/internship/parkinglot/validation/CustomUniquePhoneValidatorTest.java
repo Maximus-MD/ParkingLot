@@ -22,21 +22,11 @@ class CustomUniquePhoneValidatorTest {
     private UniquePhoneValidator customUniquePhoneValidator;
 
     @Test
-    void isValid_PhoneIsNull_ReturnsFalse() {
-        assertFalse(customUniquePhoneValidator.isValid(null, null));
-    }
-
-    @Test
-    void isValid_PhoneIsEmpty_ReturnsFalse() {
-        assertFalse(customUniquePhoneValidator.isValid("", null));
-    }
-
-    @Test
     void isValid_PhoneIsValid_ReturnsTrue() {
         String phone = "123456789";
         when(userRepository.existsByPhone(phone)).thenReturn(false);
 
-        assertTrue(customUniquePhoneValidator.isValid(phone,null));
+        assertTrue(customUniquePhoneValidator.isValid(phone, null));
     }
 
     @Test
@@ -44,6 +34,6 @@ class CustomUniquePhoneValidatorTest {
         String phone = "123456789";
         when(userRepository.existsByPhone(phone)).thenReturn(true);
 
-        assertFalse(customUniquePhoneValidator.isValid(phone,null));
+        assertFalse(customUniquePhoneValidator.isValid(phone, null));
     }
 }

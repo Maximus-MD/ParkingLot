@@ -17,7 +17,7 @@ public class JWTService {
     private final JWTUtils jwtUtils;
 
     public String generateToken(final String email) {
-        return userRepository.findByEmail(email)
+        return userRepository.findByEmailIgnoreCase(email)
                 .map(userEntity -> {
                     String role = userEntity.getRole().getRoleName().name();
                     return jwtUtils.generateAccessToken(email, role);
@@ -27,7 +27,7 @@ public class JWTService {
     }
 
     protected User findUserByEmail(final String email) {
-        return userRepository.findByEmail(email)
+        return userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() ->
                         new CustomAuthException(USER_NOT_FOUND, String.format("User email: %s not found", email)));
     }

@@ -22,28 +22,18 @@ class CustomUniqueEmailValidatorTest {
     private UniqueEmailValidator customUniqueEmailValidator;
 
     @Test
-    void isValid_EmailIsNull_ReturnFalse() {
-        assertFalse(customUniqueEmailValidator.isValid(null,null));
-    }
-
-    @Test
-    void isValid_EmailIsEmpty_ReturnFalse() {
-        assertFalse(customUniqueEmailValidator.isValid("",null));
-    }
-
-    @Test
     void isValid_EmailIsValid_ReturnsTrue() {
         String email = "test@endava.com";
-        when(userRepository.existsByEmail(email)).thenReturn(false);
+        when(userRepository.existsByEmailIgnoreCase(email)).thenReturn(false);
 
-        assertTrue(customUniqueEmailValidator.isValid(email,null));
+        assertTrue(customUniqueEmailValidator.isValid(email, null));
     }
 
     @Test
     void isValid_EmailIsInvalid_ReturnsFalse() {
         String email = "test@endava.com";
-        when(userRepository.existsByEmail(email)).thenReturn(true);
+        when(userRepository.existsByEmailIgnoreCase(email)).thenReturn(true);
 
-        assertFalse(customUniqueEmailValidator.isValid(email,null));
+        assertFalse(customUniqueEmailValidator.isValid(email, null));
     }
 }

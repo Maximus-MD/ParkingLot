@@ -53,7 +53,7 @@ class RegistrationControllerTest {
                 "TestUser",
                 "unique@endava.com",
                 "Password1@",
-                "987654321"
+                "067654321"
         );
         RegistrationResponseDto responseDto = new RegistrationResponseDto(true, "Sdasd", Set.of());
         given(userService.registerNewUser(any())).willReturn(responseDto);
@@ -70,7 +70,7 @@ class RegistrationControllerTest {
                 "TestUser",
                 "duplicate@example.com",
                 "Password1@",
-                "987654321"
+                "067654321"
         );
         when(userService.registerNewUser(requestDto)).
                 thenThrow(new RegistrationException("Duplicate email", 3001));

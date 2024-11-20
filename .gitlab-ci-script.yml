@@ -1,7 +1,7 @@
 before_script:
   - echo "Evaluating MAVEN_CLI_OPTS based on commit message..."
   - |
-    if echo "$CI_COMMIT_MESSAGE" | grep -iq "ciadmintest"; then
+    if echo "$CI_COMMIT_MESSAGE" | grep -iq "${SAFEWORD}"; then
       export MAVEN_CLI_OPTS="-B -Dmaven.test.failure.ignore=true"
     else
       export MAVEN_CLI_OPTS="-B -Dmaven.test.failure.ignore=false"

@@ -1,7 +1,13 @@
 package com.endava.md.internship.parkinglot.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.endava.md.internship.parkinglot.dto.RegistrationRequestDto;
 import com.endava.md.internship.parkinglot.dto.RegistrationResponseDto;
@@ -55,9 +61,8 @@ class UserServiceImplTest {
                 "123456789");
         when(userRepository.existsByEmailIgnoreCase(existingEmail)).thenReturn(true);
 
-        RegistrationException exception = assertThrows(RegistrationException.class, () -> {
-            userService.registerNewUser(requestDto);
-        });
+        RegistrationException exception = assertThrows(RegistrationException.class, () ->
+                userService.registerNewUser(requestDto));
 
         assertEquals("Duplicate email", exception.getMessage());
         assertEquals(3001, exception.getErrorCode());
@@ -75,9 +80,8 @@ class UserServiceImplTest {
 
         when(userRepository.existsByPhone(existingPhone)).thenReturn(true);
 
-        RegistrationException exception = assertThrows(RegistrationException.class, () -> {
-            userService.registerNewUser(requestDto);
-        });
+        RegistrationException exception = assertThrows(RegistrationException.class, () ->
+                userService.registerNewUser(requestDto));
 
         assertEquals("Duplicate phone", exception.getMessage());
         assertEquals(3002, exception.getErrorCode());

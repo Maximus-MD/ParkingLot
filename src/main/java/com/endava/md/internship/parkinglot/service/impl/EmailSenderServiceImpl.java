@@ -7,6 +7,8 @@ import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import static jakarta.mail.internet.MimeMessage.RecipientType.TO;
+
 
 @Service
 public class EmailSenderServiceImpl implements EmailSenderService {
@@ -21,7 +23,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     public void sendEmail(String recipient, String subject, String body) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         mimeMessage.setFrom(new InternetAddress("parkingLot@mail.com"));
-        mimeMessage.setRecipient(MimeMessage.RecipientType.TO, new InternetAddress(recipient));
+        mimeMessage.setRecipient(TO, new InternetAddress(recipient));
         mimeMessage.setSubject(subject);
         mimeMessage.setText(body);
         mailSender.send(mimeMessage);

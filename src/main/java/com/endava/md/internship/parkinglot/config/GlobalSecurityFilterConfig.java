@@ -2,7 +2,7 @@ package com.endava.md.internship.parkinglot.config;
 
 import com.endava.md.internship.parkinglot.exception.CustomAuthenticationEntryPoint;
 import com.endava.md.internship.parkinglot.security.JWTRequestFilter;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
 public class GlobalSecurityFilterConfig {
@@ -34,6 +34,7 @@ public class GlobalSecurityFilterConfig {
                         .requestMatchers(
                                 HttpMethod.POST, "/register", "/login").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/restore-password").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/actuator/health", "/favicon.ico").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(handler -> handler

@@ -85,7 +85,7 @@ deploy_nexus:
 trigger_docker:
   stage: deploy
   dependencies:
-    - deploy
+    - deploy_nexus
   trigger:
     project: tooling/docker-packing
     branch: "main"

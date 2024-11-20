@@ -21,7 +21,7 @@ cache:
   paths:
     - $MAVEN_CACHE_DIR
 
-.set-maven-cli-opts:
+set_maven_cli_opts:
   stage: prepare
   script:
     - echo "Evaluating MAVEN_CLI_OPTS based on commit message..."

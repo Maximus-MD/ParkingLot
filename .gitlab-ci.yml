@@ -3,6 +3,7 @@ stages:
   - test
   - analyze
   - deploy
+  - docker
 
 variables:
   MAVEN_IMAGE: "maven:3.8.7-openjdk-18"
@@ -83,9 +84,7 @@ deploy_nexus:
     - master
 
 trigger_docker:
-  stage: deploy
-  dependencies:
-    - deploy_nexus
+  stage: docker
   trigger:
     project: tooling/docker-packing
     branch: "main"

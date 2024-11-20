@@ -27,9 +27,9 @@ set_maven_cli_opts:
     - echo "Evaluating MAVEN_CLI_OPTS based on commit message..."
     - |
       if echo "$CI_COMMIT_MESSAGE" | grep -iq "ciadmintest"; then
-        echo "MAVEN_CLI_OPTS=-B -Dmaven.test.failure.ignore=true" >> $GITLAB_ENV
+        echo "MAVEN_CLI_OPTS=\"-B -Dmaven.test.failure.ignore=true\"" >> $GITLAB_ENV
       else
-        echo "MAVEN_CLI_OPTS=-B -Dmaven.test.failure.ignore=false" >> $GITLAB_ENV
+        echo "MAVEN_CLI_OPTS=\"-B -Dmaven.test.failure.ignore=false\"" >> $GITLAB_ENV
       fi
   rules:
     - when: always

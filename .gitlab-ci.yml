@@ -81,3 +81,13 @@ deploy:
     - build
   only:
     - master
+  trigger:
+    project: tooling/docker-packing
+    branch: "main"
+    strategy: depend
+  variables:
+    GROUP_ID: "${GROUP_ID}"
+    ARTIFACT_ID: "${ARTIFACT_ID}"
+    VERSION: ${VERSION}
+
+

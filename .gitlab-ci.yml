@@ -89,9 +89,8 @@ trigger_docker:
     project: tooling/docker-packing
     branch: "java"
     strategy: depend
-  variables:
-    GROUP_ID: "$GROUP_ID"
-    ARTIFACT_ID: "$ARTIFACT_ID"
-    VERSION: "$VERSION"
+    forward:
+      pipeline_variables: true
+
 
 

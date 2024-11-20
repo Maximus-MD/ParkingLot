@@ -63,7 +63,7 @@ sonar_analyze:
   dependencies:
     - build
 
-deploy:
+deploy_nexus:
   stage: deploy
   image: curlimages/curl:latest
   script:
@@ -81,6 +81,11 @@ deploy:
     - build
   only:
     - master
+
+trigger_docker:
+  stage: deploy
+  dependencies:
+    - deploy
   trigger:
     project: tooling/docker-packing
     branch: "main"

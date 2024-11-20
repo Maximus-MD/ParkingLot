@@ -90,8 +90,8 @@ trigger_docker:
     branch: "java"
     strategy: depend
   variables:
-    GROUP_ID: "${GROUP_ID}"
-    ARTIFACT_ID: "${ARTIFACT_ID}"
-    VERSION: ${VERSION}
+    GROUP_ID: "$GROUP_ID"
+    ARTIFACT_ID: "$ARTIFACT_ID"
+    VERSION: "$VERSION"
 
 

@@ -45,7 +45,7 @@ public class AuthServiceImplTest {
         LoginRequestDto loginRequestDto = LoginDTOUtils.getPreparedRequestDto();
         LoginResponseDto loginResponseDto = LoginDTOUtils.getPreparedResponseDto();
 
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.of(user));
 
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
 
@@ -58,7 +58,7 @@ public class AuthServiceImplTest {
 
     @Test
     void loginTest_WhenUserNotExist_ThrowsCustomAuthException() {
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.empty());
 
         CustomAuthException customAuthException = assertThrows(CustomAuthException.class, () ->
                 authService.login(LoginDTOUtils.getPreparedRequestDto()));
@@ -71,7 +71,7 @@ public class AuthServiceImplTest {
         User user = UserUtils.getPreparedUser();
         LoginRequestDto loginRequestDto = LoginDTOUtils.getPreparedRequestDto();
 
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.of(user));
 
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
 

@@ -9,7 +9,6 @@ import com.endava.md.internship.parkinglot.service.AuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import static com.endava.md.internship.parkinglot.exception.AuthErrorTypeEnum.BAD_CREDENTIALS;
 
@@ -27,7 +26,7 @@ public class AuthServiceImpl implements AuthService {
         String emailDTO = loginRequestDto.email();
         String passwordDTO = loginRequestDto.password();
 
-        userRepository.findByEmail(emailDTO).stream()
+        userRepository.findByEmailIgnoreCase(emailDTO).stream()
                 .peek(userEntity -> validateIfPasswordsMatches(userEntity.getPassword(), passwordDTO))
                 .findAny()
                 .orElseThrow(() -> new CustomAuthException(BAD_CREDENTIALS,

@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
         final String DEPRIVED = "You have been deprived of Admin role for Parking Lot app.";
         final String GRANTED = "You have been granted an Admin role for Parking Lot app.";
 
-        User user = userRepository.findByEmail(email).orElseThrow(
+        User user = userRepository.findByEmailIgnoreCase(email).orElseThrow(
                 () -> new CustomAuthException(USER_NOT_FOUND, String.format("User with email %s not found", email)));
 
         if(user.getRole().getRoleName() == role){
@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void checkEmailAndPhoneAvailability(RegistrationRequestDto registrationDto) {
-        if (userRepository.existsByEmail(registrationDto.email())) {
+        if (userRepository.existsByEmailIgnoreCase(registrationDto.email())) {
             throw new RegistrationException("Duplicate email", 3001);
         }
         if (userRepository.existsByPhone(registrationDto.phone())) {

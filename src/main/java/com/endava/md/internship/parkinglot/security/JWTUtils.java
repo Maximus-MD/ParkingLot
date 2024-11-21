@@ -11,7 +11,6 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import jakarta.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -25,13 +24,12 @@ import java.util.Date;
 import static com.endava.md.internship.parkinglot.exception.AuthErrorTypeEnum.INVALID_JWT;
 import static com.endava.md.internship.parkinglot.exception.AuthErrorTypeEnum.JWT_TOKEN_GENERATION_ERROR;
 
-@Slf4j
 @Component
 public class JWTUtils {
 
     @Value("${JWT_SECRET_KEY_STRING}")
-    private String SECRET_KEY_STRING;
-    private SecretKey ACCESS_SECRET_KEY;
+    private String secretKeyString;
+    private SecretKey accessSecretKey;
 
     private static final String ROLE = "role";
 
@@ -46,9 +44,8 @@ public class JWTUtils {
     private void initKeyGenerator() {
         try {
             MessageDigest hashGenerator = MessageDigest.getInstance("SHA-256");
-            byte[] keyBytes = hashGenerator.digest(SECRET_KEY_STRING.getBytes());
-            ACCESS_SECRET_KEY = new SecretKeySpec(keyBytes, "HmacSHA256");
-            log.info("JWT Secret key initialized successfully");
+            byte[] keyBytes = hashGenerator.digest(secretKeyString.getBytes());
+            accessSecretKey = new SecretKeySpec(keyBytes, "HmacSHA256");
         } catch (Exception exception) {
             throw new CustomAuthException(JWT_TOKEN_GENERATION_ERROR, exception.getMessage());
         }
@@ -56,7 +53,7 @@ public class JWTUtils {
 
     protected String generateAccessToken(final String email, final String role) {
         try {
-            JWSSigner signer = new MACSigner(ACCESS_SECRET_KEY);
+            JWSSigner signer = new MACSigner(accessSecretKey);
             JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                     .subject(email)
                     .expirationTime(new Date(System.currentTimeMillis() + EXPIRATION_RATE.toMillis()))
@@ -68,7 +65,6 @@ public class JWTUtils {
             signedJWT.sign(signer);
             return signedJWT.serialize();
         } catch (Exception exception) {
-            log.error(exception.getMessage());
             throw new CustomAuthException(JWT_TOKEN_GENERATION_ERROR, exception.getMessage());
         }
     }
@@ -79,7 +75,6 @@ public class JWTUtils {
 
             return signedJWT.getJWTClaimsSet().getSubject();
         } catch (Exception exception) {
-            log.error(exception.getMessage());
             throw new CustomAuthException(INVALID_JWT, exception.getMessage());
         }
     }
@@ -90,7 +85,6 @@ public class JWTUtils {
 
             return isTokenExpired(signedJWT) && isTokenValid(signedJWT);
         } catch (ParseException | JOSEException exception) {
-            log.error(exception.getMessage());
             throw new CustomAuthException(INVALID_JWT, exception.getMessage());
         }
     }
@@ -102,7 +96,7 @@ public class JWTUtils {
     }
 
     private boolean isTokenValid(final SignedJWT signedJWT) throws JOSEException {
-        JWSVerifier verifier = new MACVerifier(ACCESS_SECRET_KEY);
+        JWSVerifier verifier = new MACVerifier(accessSecretKey);
 
         return signedJWT.verify(verifier);
     }

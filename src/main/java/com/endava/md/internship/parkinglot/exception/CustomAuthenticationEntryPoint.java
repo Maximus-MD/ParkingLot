@@ -15,7 +15,7 @@ import java.io.IOException;
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Value("${message.request.authentication.failed}")
-    int REQUEST_AUTHENTICATION_FAILED;
+    int requestAuthenticationFailed;
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
@@ -30,7 +30,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
                     "token": null,
                     "error": [%s]
                 }
-                """, REQUEST_AUTHENTICATION_FAILED);
+                """, requestAuthenticationFailed);
         response.getWriter().write(responseBody);
     }
 }

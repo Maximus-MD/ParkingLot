@@ -1,50 +1,56 @@
-package com.endava.md.internship.parkinglot.controller;
+package com.endava.md.internship.parkinglot.config;
 
 import com.endava.md.internship.parkinglot.dto.LoginRequestDto;
 import com.endava.md.internship.parkinglot.dto.LoginResponseDto;
 import com.endava.md.internship.parkinglot.service.AuthService;
 import com.endava.md.internship.parkinglot.utils.LoginDTOUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
-class LoginControllerTest {
+@SpringBootTest(properties = {"spring.flyway.enabled=false"})
+@AutoConfigureMockMvc
+class GlobalSecurityFilterConfigTest {
 
+    @Autowired
     private MockMvc mockMvc;
 
-    @Mock
+    @MockBean
     private AuthService authService;
-
-    @InjectMocks
-    private LoginController loginController;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @BeforeEach
-    void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(loginController).build();
+    @Test
+    void securityFilterChainTest_AccessingSecuredEndpoint_ReturnsSuccessFalseAnd4044ErrorCode() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/something-protected")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.token").value((Object) null))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value(4044))
+                .andDo(print());
     }
 
     @Test
-    void loginTest_ReturnsResponseEntityLoginResponseDTO() throws Exception {
+    void securityFilterChainTest_AccessingUnsecuredEndpoint_ReturnsSuccessTrueAndNullError() throws Exception {
         LoginRequestDto loginRequestDto = LoginDTOUtils.getPreparedRequestDto();
         LoginResponseDto loginResponseDto = LoginDTOUtils.getPreparedResponseDto();
 
-        when(authService.login(any(LoginRequestDto.class))).thenReturn(loginResponseDto);
+        when(authService.login(any())).thenReturn(loginResponseDto);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/login")

@@ -3,13 +3,13 @@ package com.endava.md.internship.parkinglot.security;
 import com.endava.md.internship.parkinglot.exception.CustomAuthException;
 import com.endava.md.internship.parkinglot.model.User;
 import com.endava.md.internship.parkinglot.repository.UserRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import static com.endava.md.internship.parkinglot.exception.AuthErrorTypeEnum.USER_NOT_FOUND;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class JWTService {
 
     private final UserRepository userRepository;

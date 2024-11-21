@@ -22,19 +22,19 @@ import java.util.stream.Collectors;
 public class CustomExceptionHandler {
 
     @Value("${message.jwt-generation-error}")
-    int JWT_TOKEN_GENERATION_ERROR;
+    int jwtTokenGenerationError;
 
     @Value("${message.bad.credentials}")
-    int BAD_CREDENTIALS;
+    int badCredentials;
 
     @Value("${message.user-not-found}")
-    int USER_NOT_FOUND;
+    int userNotFound;
 
     @Value("${message.invalid-jwt}")
-    int INVALID_JWT;
+    int invalidJwt;
 
     @Value("${message.server-error}")
-    int SERVER_ERROR;
+    int serverError;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<RegistrationResponseDto> handleValidationExceptions(MethodArgumentNotValidException exception) {
@@ -49,29 +49,14 @@ public class CustomExceptionHandler {
     public ResponseEntity<LoginResponseDto> handleCustomAuthException(final CustomAuthException authException) {
         log.error(authException.getMessage());
         return switch (authException.getAuthErrorType()) {
-            case JWT_TOKEN_GENERATION_ERROR -> buildResponseEntity(JWT_TOKEN_GENERATION_ERROR);
+            case JWT_TOKEN_GENERATION_ERROR -> buildResponseEntity(jwtTokenGenerationError);
 
-            case BAD_CREDENTIALS -> buildResponseEntity(BAD_CREDENTIALS);
+            case BAD_CREDENTIALS -> buildResponseEntity(badCredentials);
 
-            case USER_NOT_FOUND -> buildResponseEntity(USER_NOT_FOUND);
+            case USER_NOT_FOUND -> buildResponseEntity(userNotFound);
 
-            case INVALID_JWT -> buildResponseEntity(INVALID_JWT);
+            case INVALID_JWT -> buildResponseEntity(invalidJwt);
         };
-    }
-
-    @ExceptionHandler(RoleNotFoundException.class)
-    public ResponseEntity<RegistrationResponseDto> handleRoleNotFoundException() {
-        RegistrationResponseDto responseDto = new RegistrationResponseDto(false, null,
-                Set.of(SERVER_ERROR));
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
-    }
-
-    @ExceptionHandler(EmailSendException.class)
-    public ResponseEntity<RegistrationResponseDto> handleEmailSendException() {
-        RegistrationResponseDto responseDto = new RegistrationResponseDto(false, null,
-                Set.of(SERVER_ERROR));
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
     }
 
     @ExceptionHandler(RegistrationException.class)
@@ -87,7 +72,7 @@ public class CustomExceptionHandler {
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<RegistrationResponseDto> handleGenericError() {
         RegistrationResponseDto responseDto = new RegistrationResponseDto(false, null,
-                Set.of(SERVER_ERROR));
+                Set.of(serverError));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
     }
 

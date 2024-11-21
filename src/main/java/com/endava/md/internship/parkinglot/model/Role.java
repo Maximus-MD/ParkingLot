@@ -30,8 +30,4 @@ public class Role {
     @Enumerated(EnumType.STRING)
     @Column(name = "role_name")
     private RoleEnum roleName;
-
-    public Role(RoleEnum roleName) {
-        this.roleName = roleName;
-    }
 }

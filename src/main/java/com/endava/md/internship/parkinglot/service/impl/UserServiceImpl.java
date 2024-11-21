@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmailIgnoreCase(email).orElseThrow(
                 () -> new CustomAuthException(USER_NOT_FOUND, String.format("User with email %s not found", email)));
 
-        if(user.getRole().getRoleName() == role){
+        if (user.getRole().getRoleName() == role) {
             return new RoleSwitchResponseDto(email, true, user.getRole().getRoleName().name());
         }
 
@@ -80,7 +80,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Transactional
     protected Role switchRole(User user) {
         if (user.getRole().getRoleName().equals(ROLE_REGULAR)) {
             user.setRole(getRoleByName(ROLE_ADMIN));

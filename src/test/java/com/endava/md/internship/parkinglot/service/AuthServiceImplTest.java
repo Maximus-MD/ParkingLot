@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthServiceImplTest {
+class AuthServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
@@ -58,12 +58,14 @@ public class AuthServiceImplTest {
 
     @Test
     void loginTest_WhenUserNotExist_ThrowsCustomAuthException() {
+        LoginRequestDto loginRequestDto = LoginDTOUtils.getPreparedRequestDto();
+
         when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.empty());
 
         CustomAuthException customAuthException = assertThrows(CustomAuthException.class, () ->
-                authService.login(LoginDTOUtils.getPreparedRequestDto()));
+                authService.login(loginRequestDto));
 
-        assertEquals(customAuthException.getAuthErrorType(), BAD_CREDENTIALS);
+        assertEquals(BAD_CREDENTIALS, customAuthException.getAuthErrorType());
     }
 
     @Test
@@ -78,6 +80,6 @@ public class AuthServiceImplTest {
         CustomAuthException customAuthException =
                 assertThrows(CustomAuthException.class, () -> authService.login(loginRequestDto));
 
-        assertEquals(customAuthException.getAuthErrorType(), BAD_CREDENTIALS);
+        assertEquals(BAD_CREDENTIALS, customAuthException.getAuthErrorType());
     }
 }

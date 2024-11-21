@@ -23,19 +23,19 @@ public class PasswordRestorationController {
     }
 
     @PatchMapping
-    public ResponseEntity<SuccessfulResponse> passwordRestoration(@Valid @RequestBody UserEmail userEmail) throws MessagingException {
+    protected ResponseEntity<SuccessfulResponse> passwordRestoration(@Valid @RequestBody UserEmail userEmail) throws MessagingException {
         passwordRestorationService.restorePassword(userEmail.email);
         return ResponseEntity.ok(new SuccessfulResponse("success"));
     }
 
-    record UserEmail(
+    protected record UserEmail(
             @NotBlank(message = "{message.invalid-email}")
             @Email(message = "{message.invalid-email}")
             String email
     ) {
     }
 
-    record SuccessfulResponse(
+    protected record SuccessfulResponse(
             String response
     ) {
     }

@@ -98,5 +98,6 @@ trigger_docker:
       yaml_variables: true
   variables:
     VERSION: "$VERSION"
-
+  only:
+    - master
 

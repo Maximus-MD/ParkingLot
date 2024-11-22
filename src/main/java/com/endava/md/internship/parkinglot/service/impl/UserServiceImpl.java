@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
     private final JWTService jwtService;
 
-    private final EmailSenderService emailService;
+    private final EmailSenderService emailSenderService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
 
     private void sendRoleChangeEmail(String mailTo, String message) {
         try {
-            emailService.sendEmail(mailTo, "Role change notification.", message);
+            emailSenderService.sendEmail(mailTo, "Role change notification.", message);
         } catch (MessagingException e) {
             throw new EmailSendException("Failed to send email to " + mailTo);
         }

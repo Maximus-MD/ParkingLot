@@ -9,7 +9,7 @@ public class UserUtils {
         user.setEmail("Alex@gmail.com");
         user.setName("Alex");
         user.setPhone("0691111111");
-        user.setRole(RoleUtils.getPreparedRole());
+        user.setRole(RoleUtils.getPreparedRegularRole());
         user.setPassword("b^nlM71");
         return user;
     }

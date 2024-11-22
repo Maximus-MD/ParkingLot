@@ -6,9 +6,13 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -41,9 +45,6 @@ public class ParkingLot {
     @Column(name = "address", nullable = false, unique = true)
     private String address;
 
-    @Column(name = "levels", nullable = false)
-    private Integer levels;
-
     @Column(name = "start_time", nullable = false)
     private Time startTime;
 
@@ -53,13 +54,17 @@ public class ParkingLot {
     @Column(name = "operates_non_stop", nullable = false)
     private boolean operatesNonStop;
 
-    @OneToMany(mappedBy = "parkingLot", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(FetchMode.SUBSELECT)
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private List<WorkingTime> workingTimes;
+    @Column(name = "temporary_closed", nullable = false)
+    private boolean temporaryClosed;
 
-    @OneToMany(mappedBy = "parkingLot", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany()
+    @JoinTable(
+            name = "parking_lot_days",
+            joinColumns = @JoinColumn(name = "parking_lot_id"),
+            inverseJoinColumns = @JoinColumn(name = "day_id"))
+    private List<WorkingDay> workingDays;
+
+    @OneToMany(mappedBy = "parkingLot", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @Fetch(FetchMode.SUBSELECT)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

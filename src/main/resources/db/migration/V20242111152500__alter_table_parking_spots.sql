@@ -1,0 +1,3 @@
+ALTER TABLE parking_spots
+    DROP COLUMN IF EXISTS state,
+    ADD COLUMN occupied BOOLEAN NOT NULL DEFAULT false;

@@ -1,0 +1,1 @@
+drop type days_of_week;

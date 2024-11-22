@@ -2,6 +2,8 @@ package com.endava.md.internship.parkinglot.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,11 +32,12 @@ public class ParkingSpot {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "state", nullable = false)
-    private Boolean state;
-
+    @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    private String type;
+    private ParkingSpotType type;
+
+    @Column(name = "occupied", nullable = false)
+    private boolean occupied;
 
     @ManyToOne
     @JoinColumn(name = "level_id", nullable = false)

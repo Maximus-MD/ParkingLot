@@ -1,6 +1,6 @@
 package com.endava.md.internship.parkinglot.model;
 
-import  java.util.List;
+import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -37,17 +37,14 @@ public class ParkingLevel {
     @Column(name = "level_id")
     private Long levelId;
 
-    @Column(name = "floor", nullable = false)
-    private Integer floor;
+    @Column(name = "name", nullable = false)
+    private String levelName;
 
-    @Column(name = "total_spots", nullable = false)
-    private Integer totalSpots;
-
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "parking_lot_id", nullable = false)
     private ParkingLot parkingLot;
 
-    @OneToMany(mappedBy = "parkingLevel", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "parkingLevel", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @Fetch(FetchMode.SUBSELECT)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

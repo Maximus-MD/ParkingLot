@@ -9,7 +9,7 @@ variables:
   MAVEN_IMAGE: "maven:3.8.7-openjdk-18"
   MAVEN_CACHE_DIR: ".m2/repository"
   NEXUS_URL: "${Nexus_REPO_URL}"
-  NEXUS_USER: "${Nexus_REPO_USER}" 
+  NEXUS_USER: "${Nexus_REPO_USER}"
   NEXUS_PASSWORD: "${Nexus_REPO_PASS}"
   SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
   SONAR_PROJECT_KEY: "${SONAR_PROJECT_KEY}"
@@ -56,11 +56,11 @@ sonar_analyze:
   stage: analyze
   image: maven:3-eclipse-temurin-17
   variables:
-    MAVEN_OPTS: "-Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.token=${SONAR_TOKEN}"
+    MAVEN_OPTS: "-Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.token=${SONAR_TOKEN}"
   script:
-    - ./mvnw $MAVEN_CLI_OPTS clean install
+    - ./mvnw $MAVEN_CLI_OPTS clean install -X
     - echo "Running SonarQube analysis"
-    - ./mvnw $MAVEN_CLI_OPTS -X sonar:sonar -Dsonar.java.binaries=target/classes
+    - ./mvnw verify sonar:sonar -Dsonar.qualitygate.wait=true
   dependencies:
     - build
 

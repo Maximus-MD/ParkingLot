@@ -35,7 +35,7 @@ class JWTServiceTest {
     void generateTokenTest_WhenSuccess_ReturnsToken() {
         String token = TokenUtils.getPreparedToken();
         String email = UserUtils.getPreparedEmail();
-        String role = RoleUtils.getPreparedRoleName();
+        String role = RoleUtils.getPreparedRegularRoleName();
         User user = UserUtils.getPreparedUser();
 
         when(userRepository.findByEmailIgnoreCase(email)).thenReturn(Optional.of(user));

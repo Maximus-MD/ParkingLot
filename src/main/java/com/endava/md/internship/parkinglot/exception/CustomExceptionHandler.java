@@ -22,22 +22,23 @@ import java.util.stream.Collectors;
 public class CustomExceptionHandler {
 
     @Value("${message.jwt-generation-error}")
-    int jwtTokenGenerationError;
+    private int jwtTokenGenerationError;
 
     @Value("${message.bad.credentials}")
-    int badCredentials;
+    private int badCredentials;
 
     @Value("${message.user-not-found}")
-    int userNotFound;
+    private int userNotFound;
 
     @Value("${message.invalid-jwt}")
-    int invalidJwt;
+    private int invalidJwt;
 
     @Value("${message.server-error}")
-    int serverError;
+    private int serverError;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<RegistrationResponseDto> handleValidationExceptions(MethodArgumentNotValidException exception) {
+        log.error("Validation exception", exception);
         Set<String> errors = new HashSet<>();
         exception.getBindingResult().getAllErrors().forEach(error -> errors.add(error.getDefaultMessage()));
         Set<Integer> resultErrors = errors.stream().map(Integer::parseInt).collect(Collectors.toSet());
@@ -70,7 +71,12 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(Throwable.class)
-    public ResponseEntity<RegistrationResponseDto> handleGenericError() {
+    public ResponseEntity<RegistrationResponseDto> handleGenericError(Throwable throwable) {
+        StackTraceElement traceElement = throwable.getStackTrace()[0];
+        log.error("Generic error in class: {}, method: {}, line: {}, the error: {}",
+                traceElement.getClassName(), traceElement.getMethodName(),
+                traceElement.getLineNumber(), throwable.getMessage(), throwable);
+
         RegistrationResponseDto responseDto = new RegistrationResponseDto(false, null,
                 Set.of(serverError));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);

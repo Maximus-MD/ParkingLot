@@ -52,12 +52,12 @@ public class ParkingLot {
     private Time endTime;
 
     @Column(name = "operates_non_stop", nullable = false)
-    private boolean operatesNonStop;
+    private Boolean operatesNonStop;
 
     @Column(name = "temporary_closed", nullable = false)
-    private boolean temporaryClosed;
+    private Boolean temporaryClosed;
 
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "parking_lot_days",
             joinColumns = @JoinColumn(name = "parking_lot_id"),

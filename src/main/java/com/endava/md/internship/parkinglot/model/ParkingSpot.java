@@ -40,6 +40,6 @@ public class ParkingSpot {
     private boolean occupied;
 
     @ManyToOne
-    @JoinColumn(name = "level_id", nullable = false)
+    @JoinColumn(name = "level_id")
     private ParkingLevel parkingLevel;
 }

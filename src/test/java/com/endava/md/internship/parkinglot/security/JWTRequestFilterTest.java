@@ -2,7 +2,7 @@ package com.endava.md.internship.parkinglot.security;
 
 import com.endava.md.internship.parkinglot.dto.LoginRequestDto;
 import com.endava.md.internship.parkinglot.model.User;
-import com.endava.md.internship.parkinglot.utils.LoginDTOUtils;
+import com.endava.md.internship.parkinglot.utils.ResponseDTOUtils;
 import com.endava.md.internship.parkinglot.utils.TokenUtils;
 import com.endava.md.internship.parkinglot.utils.UserUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,7 +43,7 @@ class JWTRequestFilterTest {
     @Test
     void doFilterInternalTest_WhenRequestHaveCorrectTokenReturnsSecurityContextHolderWithAuthenticationTrue() throws Exception {
         SecurityContextHolder.clearContext();
-        LoginRequestDto loginRequestDTO = LoginDTOUtils.getPreparedRequestDto();
+        LoginRequestDto loginRequestDTO = ResponseDTOUtils.getPreparedRequestDto();
         String token = TokenUtils.getPreparedToken();
         User user = UserUtils.getPreparedUser();
 
@@ -76,7 +76,7 @@ class JWTRequestFilterTest {
     @Test
     void doFilterInternalTest_WhenRequestDontHaveTokenReturnsNullAuthenticationIntoSecurityContextHolder() throws Exception {
         SecurityContextHolder.clearContext();
-        LoginRequestDto loginRequestDTO = LoginDTOUtils.getPreparedRequestDto();
+        LoginRequestDto loginRequestDTO = ResponseDTOUtils.getPreparedRequestDto();
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setMethod("POST");
@@ -101,7 +101,7 @@ class JWTRequestFilterTest {
     @Test
     void doFilterInternalTest_WhenRequestHaveInCorrectTokenReturnsSecurityContextHolderWithAuthenticationFalse() throws Exception {
         SecurityContextHolder.clearContext();
-        LoginRequestDto loginRequestDTO = LoginDTOUtils.getPreparedRequestDto();
+        LoginRequestDto loginRequestDTO = ResponseDTOUtils.getPreparedRequestDto();
         String token = TokenUtils.getPreparedToken();
 
         MockHttpServletRequest request = new MockHttpServletRequest();

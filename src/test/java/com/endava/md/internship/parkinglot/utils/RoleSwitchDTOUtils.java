@@ -1,13 +1,13 @@
 package com.endava.md.internship.parkinglot.utils;
 
-import com.endava.md.internship.parkinglot.dto.RoleSwitchResponseDto;
+import com.endava.md.internship.parkinglot.dto.ResponseMessageDTO;
 
 public class RoleSwitchDTOUtils {
-    public static RoleSwitchResponseDto getPreparedForAdminResponseDTO() {
-        return new RoleSwitchResponseDto("AlexTests@gmail.com", true, "ROLE_ADMIN");
+    public static ResponseMessageDTO getPreparedForAdminResponseDTO() {
+        return new ResponseMessageDTO(true, "AlexTests@gmail.com", "ROLE_ADMIN");
     }
 
-    public static RoleSwitchResponseDto getPreparedForRegularResponseDTO() {
-        return new RoleSwitchResponseDto("AlexTests@gmail.com", true, "ROLE_REGULAR");
+    public static ResponseMessageDTO getPreparedForRegularResponseDTO() {
+        return new ResponseMessageDTO(true, "AlexTests@gmail.com", "ROLE_REGULAR");
     }
 }

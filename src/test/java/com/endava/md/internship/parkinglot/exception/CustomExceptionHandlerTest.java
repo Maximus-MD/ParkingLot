@@ -1,7 +1,6 @@
 package com.endava.md.internship.parkinglot.exception;
 
-import com.endava.md.internship.parkinglot.dto.LoginResponseDto;
-import com.endava.md.internship.parkinglot.dto.RegistrationResponseDto;
+import com.endava.md.internship.parkinglot.dto.ResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -54,17 +53,21 @@ class CustomExceptionHandlerTest {
     @Value("${message.server-error}")
     private int serverErrorCode;
 
+    @Value("${message.invalid-name}")
+    private int invalidNameCode;
+
     @Test
     void handleValidationExceptionsTest() {
         BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(new Object(), "objectName");
-        bindingResult.addError(new FieldError("RequestSomethingDTO", "name", "2001"));
+        bindingResult.addError(new FieldError("RequestSomethingDTO",
+                "name", String.valueOf(invalidNameCode)));
 
         when(argumentNotValidException.getBindingResult()).thenReturn(bindingResult);
-        ResponseEntity<RegistrationResponseDto> response = exceptionHandler.handleValidationExceptions(argumentNotValidException);
+        ResponseEntity<ResponseDTO> response = exceptionHandler.handleValidationExceptions(argumentNotValidException);
 
         assertNotNull(response.getBody());
-        assertFalse(response.getBody().success());
-        assertThat(response.getBody().error()).containsExactly(2001);
+        assertFalse(response.getBody().isSuccess());
+        assertThat(response.getBody().getError()).containsExactly(invalidNameCode);
     }
 
     @Test
@@ -74,11 +77,11 @@ class CustomExceptionHandlerTest {
         serverErrorField.set(exceptionHandler, jwtTokenGenerationErrorCode);
 
         authException = new CustomAuthException(JWT_TOKEN_GENERATION_ERROR, "bad generation very bad");
-        ResponseEntity<LoginResponseDto> response = exceptionHandler.handleCustomAuthException(authException);
+        ResponseEntity<ResponseDTO> response = exceptionHandler.handleCustomAuthException(authException);
 
         assertNotNull(response.getBody());
-        assertFalse(response.getBody().success());
-        assertThat(response.getBody().error()).containsExactly(jwtTokenGenerationErrorCode);
+        assertFalse(response.getBody().isSuccess());
+        assertThat(response.getBody().getError()).containsExactly(jwtTokenGenerationErrorCode);
     }
 
     @Test
@@ -88,11 +91,11 @@ class CustomExceptionHandlerTest {
         serverErrorField.set(exceptionHandler, badCredentialsCode);
 
         authException = new CustomAuthException(BAD_CREDENTIALS, "bad very bad");
-        ResponseEntity<LoginResponseDto> response = exceptionHandler.handleCustomAuthException(authException);
+        ResponseEntity<ResponseDTO> response = exceptionHandler.handleCustomAuthException(authException);
 
         assertNotNull(response.getBody());
-        assertFalse(response.getBody().success());
-        assertThat(response.getBody().error()).containsExactly(badCredentialsCode);
+        assertFalse(response.getBody().isSuccess());
+        assertThat(response.getBody().getError()).containsExactly(badCredentialsCode);
     }
 
     @Test
@@ -102,11 +105,11 @@ class CustomExceptionHandlerTest {
         serverErrorField.set(exceptionHandler, userNotFoundCode);
 
         authException = new CustomAuthException(USER_NOT_FOUND, "not found very not");
-        ResponseEntity<LoginResponseDto> response = exceptionHandler.handleCustomAuthException(authException);
+        ResponseEntity<ResponseDTO> response = exceptionHandler.handleCustomAuthException(authException);
 
         assertNotNull(response.getBody());
-        assertFalse(response.getBody().success());
-        assertThat(response.getBody().error()).containsExactly(userNotFoundCode);
+        assertFalse(response.getBody().isSuccess());
+        assertThat(response.getBody().getError()).containsExactly(userNotFoundCode);
     }
 
     @Test
@@ -116,11 +119,11 @@ class CustomExceptionHandlerTest {
         serverErrorField.set(exceptionHandler, invalidJwtCode);
 
         authException = new CustomAuthException(INVALID_JWT, "invalid very invalid");
-        ResponseEntity<LoginResponseDto> response = exceptionHandler.handleCustomAuthException(authException);
+        ResponseEntity<ResponseDTO> response = exceptionHandler.handleCustomAuthException(authException);
 
         assertNotNull(response.getBody());
-        assertFalse(response.getBody().success());
-        assertThat(response.getBody().error()).containsExactly(invalidJwtCode);
+        assertFalse(response.getBody().isSuccess());
+        assertThat(response.getBody().getError()).containsExactly(invalidJwtCode);
     }
 
     @Test
@@ -130,10 +133,10 @@ class CustomExceptionHandlerTest {
         serverErrorField.set(exceptionHandler, serverErrorCode);
 
         emailSendException = new EmailSendException("valey valey exception");
-        ResponseEntity<RegistrationResponseDto> response = exceptionHandler.handleGenericError(emailSendException);
+        ResponseEntity<ResponseDTO> response = exceptionHandler.handleGenericError(emailSendException);
 
         assertNotNull(response.getBody());
-        assertFalse(response.getBody().success());
-        assertThat(response.getBody().error()).containsExactly(serverErrorCode);
+        assertFalse(response.getBody().isSuccess());
+        assertThat(response.getBody().getError()).containsExactly(serverErrorCode);
     }
 }

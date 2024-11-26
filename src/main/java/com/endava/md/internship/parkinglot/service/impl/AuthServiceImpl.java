@@ -1,7 +1,6 @@
 package com.endava.md.internship.parkinglot.service.impl;
 
 import com.endava.md.internship.parkinglot.dto.LoginRequestDto;
-import com.endava.md.internship.parkinglot.dto.LoginResponseDto;
 import com.endava.md.internship.parkinglot.exception.CustomAuthException;
 import com.endava.md.internship.parkinglot.model.User;
 import com.endava.md.internship.parkinglot.repository.UserRepository;
@@ -24,15 +23,13 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public LoginResponseDto login(final LoginRequestDto loginRequestDto) {
+    public String login(final LoginRequestDto loginRequestDto) {
         String emailDTO = loginRequestDto.email();
         String passwordDTO = loginRequestDto.password();
 
         validateCredentials(emailDTO, passwordDTO);
 
-        String token = jwtService.generateToken(emailDTO);
-
-        return new LoginResponseDto(true, token, null);
+        return jwtService.generateToken(emailDTO);
     }
 
     private void validateCredentials(String email, String password) {

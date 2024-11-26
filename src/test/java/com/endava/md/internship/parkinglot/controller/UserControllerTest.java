@@ -1,9 +1,9 @@
 package com.endava.md.internship.parkinglot.controller;
 
-import com.endava.md.internship.parkinglot.dto.RoleSwitchResponseDto;
+import com.endava.md.internship.parkinglot.dto.ResponseMessageDTO;
 import com.endava.md.internship.parkinglot.service.UserService;
 import com.endava.md.internship.parkinglot.utils.EmailDTOUtils;
-import com.endava.md.internship.parkinglot.utils.RoleSwitchDTOUtils;
+import com.endava.md.internship.parkinglot.utils.ResponseDTOUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,13 +19,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
-
-    private static final String EMAIL = "AlexTests@gmail.com";
-
     private MockMvc mockMvc;
 
     @Mock
@@ -43,37 +39,41 @@ class UserControllerTest {
 
     @Test
     void switchUserRoleToAdminTest_ReturnsRoleSwitchedSuccessfulResponseDto() throws Exception {
-        RoleSwitchResponseDto roleSwitchResponseDto = RoleSwitchDTOUtils.getPreparedForAdminResponseDTO();
+        final String ADMIN_ROLE = "ROLE_ADMIN";
+        EmailDTOUtils.UserEmail emailDTO = EmailDTOUtils.getPreparedDTO();
+        ResponseMessageDTO responseDTO = ResponseDTOUtils.getPreparedResponseMessageForRoleDTO(
+                emailDTO.email(), ADMIN_ROLE);
 
-        when(userService.setNewRole(any(), any())).thenReturn(roleSwitchResponseDto);
+        when(userService.setNewRole(any(), any())).thenReturn(responseDTO);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .patch("/users/switch-role/admin")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(EmailDTOUtils.getPreparedDTO())))
+                        .content(objectMapper.writeValueAsString(emailDTO)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(EMAIL))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.result").value(true))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.newRole").value("ROLE_ADMIN"))
-                .andDo(print());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(emailDTO.email()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.result").value(ADMIN_ROLE));
     }
 
     @Test
     void switchUserRoleToRegularTest_ReturnsRoleSwitchedSuccessfulResponseDto() throws Exception {
-        RoleSwitchResponseDto roleSwitchResponseDto = RoleSwitchDTOUtils.getPreparedForRegularResponseDTO();
+        final String USER_ROLE = "ROLE_USER";
+        EmailDTOUtils.UserEmail emailDTO = EmailDTOUtils.getPreparedDTO();
+        ResponseMessageDTO responseDTO = ResponseDTOUtils.getPreparedResponseMessageForRoleDTO(
+                emailDTO.email(), USER_ROLE);
 
-        when(userService.setNewRole(any(), any())).thenReturn(roleSwitchResponseDto);
+        when(userService.setNewRole(any(), any())).thenReturn(responseDTO);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .patch("/users/switch-role/regular")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(EmailDTOUtils.getPreparedDTO())))
+                        .content(objectMapper.writeValueAsString(emailDTO)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(EMAIL))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.result").value(true))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.newRole").value("ROLE_REGULAR"))
-                .andDo(print());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(emailDTO.email()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.result").value(USER_ROLE));
     }
 }

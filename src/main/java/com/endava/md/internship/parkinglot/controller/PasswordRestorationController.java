@@ -1,5 +1,7 @@
 package com.endava.md.internship.parkinglot.controller;
 
+import com.endava.md.internship.parkinglot.utils.ResponseFactory;
+import com.endava.md.internship.parkinglot.dto.ResponseMessageDTO;
 import com.endava.md.internship.parkinglot.service.PasswordRestorationService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -23,20 +25,15 @@ public class PasswordRestorationController {
     }
 
     @PatchMapping
-    protected ResponseEntity<SuccessfulResponseDTO> passwordRestoration(@Valid @RequestBody UserEmailDTO userEmail) throws MessagingException {
+    protected ResponseEntity<ResponseMessageDTO> passwordRestoration(@Valid @RequestBody UserEmailDTO userEmail) throws MessagingException {
         passwordRestorationService.restorePassword(userEmail.email);
-        return ResponseEntity.ok(new SuccessfulResponseDTO("success"));
+        return ResponseFactory.createResponse(userEmail.email, "Restored");
     }
 
     protected record UserEmailDTO(
             @NotBlank(message = "{message.invalid-email}")
             @Email(message = "{message.invalid-email}")
             String email
-    ) {
-    }
-
-    protected record SuccessfulResponseDTO(
-            String response
     ) {
     }
 }

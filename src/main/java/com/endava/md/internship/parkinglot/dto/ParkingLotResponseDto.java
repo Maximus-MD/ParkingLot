@@ -2,22 +2,13 @@ package com.endava.md.internship.parkinglot.dto;
 
 import lombok.Builder;
 
-import java.sql.Time;
+import java.util.Set;
 
 @Builder
 public record ParkingLotResponseDto(
-        String name,
 
-        String address,
+        boolean success,
 
-        Time startTime,
-
-        Time endTime,
-
-        Boolean operatesNonStop,
-
-        Boolean temporaryClosed,
-
-        boolean success
+        Set<Integer> error
 ) {
 }

@@ -1,7 +1,5 @@
 package com.endava.md.internship.parkinglot.dto;
 
-import com.endava.md.internship.parkinglot.validation.annotation.UniqueAddress;
-import com.endava.md.internship.parkinglot.validation.annotation.UniqueParkingName;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -11,20 +9,16 @@ import java.util.Map;
 
 public record ParkingLotRequestDto(
 
-        @NotBlank
         @Size(max = 70)
-        @UniqueParkingName
+        @NotBlank
         String name,
 
         @Size(max = 70)
         @NotBlank
-        @UniqueAddress
         String address,
 
-        @NotBlank
         Time startTime,
 
-        @NotBlank
         Time endTime,
 
         boolean operatesNonStop,
@@ -32,7 +26,7 @@ public record ParkingLotRequestDto(
         boolean temporaryClosed,
 
         @NotBlank
-        List<WorkingDayDto> workingTimes,
+        List<WorkingDayDto> workingDays,
 
         @Size(min = 1, max = 5)
         @NotBlank

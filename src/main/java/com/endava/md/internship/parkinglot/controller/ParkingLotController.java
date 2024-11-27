@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/parking-lots")
 @RequiredArgsConstructor
-public class AdminController {
+public class ParkingLotController {
 
     private final ParkingLotService parkingService;
 
-    @PostMapping("/create-parking-lot")
+    @PostMapping("/create")
     public ResponseEntity<ParkingLotResponseDto> newParkingLot(@RequestBody final ParkingLotRequestDto parkingLotRequestDto) {
         ParkingLotResponseDto response = parkingService.createParkingLot(parkingLotRequestDto);
 

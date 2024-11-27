@@ -1,6 +1,7 @@
 package com.endava.md.internship.parkinglot.utils;
 
 import com.endava.md.internship.parkinglot.dto.ResponseDTO;
+import com.endava.md.internship.parkinglot.dto.ResponseGenericErrorDTO;
 import com.endava.md.internship.parkinglot.dto.ResponseMessageDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,12 +30,8 @@ public final class ResponseFactory {
         return ResponseEntity.ok(new ResponseDTO(false, null, errors));
     }
 
-    public static ResponseEntity<ResponseDTO> createResponse(final ResponseDTO responseDTO) {
-        return ResponseEntity.ok(responseDTO);
-    }
-
-    public static ResponseEntity<ResponseDTO> createResponse(final Integer error) {
+    public static ResponseEntity<ResponseGenericErrorDTO> createResponse(final Integer error) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ResponseDTO(false, null, Collections.singleton(error)));
+                .body(new ResponseGenericErrorDTO(false, Collections.singleton(error)));
     }
 }

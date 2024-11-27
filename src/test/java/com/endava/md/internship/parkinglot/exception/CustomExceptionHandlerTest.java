@@ -1,6 +1,7 @@
 package com.endava.md.internship.parkinglot.exception;
 
 import com.endava.md.internship.parkinglot.dto.ResponseDTO;
+import com.endava.md.internship.parkinglot.dto.ResponseGenericErrorDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -133,7 +134,7 @@ class CustomExceptionHandlerTest {
         serverErrorField.set(exceptionHandler, serverErrorCode);
 
         emailSendException = new EmailSendException("valey valey exception");
-        ResponseEntity<ResponseDTO> response = exceptionHandler.handleGenericError(emailSendException);
+        ResponseEntity<ResponseGenericErrorDTO> response = exceptionHandler.handleGenericError(emailSendException);
 
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isSuccess());

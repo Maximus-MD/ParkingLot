@@ -8,10 +8,6 @@ import jakarta.validation.ConstraintValidatorContext;
 import java.util.List;
 
 public class NotEmptyWorkingTimesValidator implements ConstraintValidator<NotEmptyWorkingTimes, List<WorkingDayDto>> {
-    @Override
-    public void initialize(NotEmptyWorkingTimes constraintAnnotation) {
-        ConstraintValidator.super.initialize(constraintAnnotation);
-    }
 
     @Override
     public boolean isValid(List<WorkingDayDto> workingDaysDto, ConstraintValidatorContext constraintValidatorContext) {

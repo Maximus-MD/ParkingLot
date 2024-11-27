@@ -1,9 +1,9 @@
 package com.endava.md.internship.parkinglot.config;
 
 import com.endava.md.internship.parkinglot.dto.LoginRequestDto;
-import com.endava.md.internship.parkinglot.dto.LoginResponseDto;
 import com.endava.md.internship.parkinglot.service.AuthService;
-import com.endava.md.internship.parkinglot.utils.LoginDTOUtils;
+import com.endava.md.internship.parkinglot.utils.ResponseDTOUtils;
+import com.endava.md.internship.parkinglot.utils.TokenUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = {"spring.flyway.enabled=false"})
@@ -41,16 +40,15 @@ class GlobalSecurityFilterConfigTest {
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.token").value((Object) null))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value(4044))
-                .andDo(print());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value(4044));
     }
 
     @Test
     void securityFilterChainTest_AccessingUnsecuredEndpoint_ReturnsSuccessTrueAndNullError() throws Exception {
-        LoginRequestDto loginRequestDto = LoginDTOUtils.getPreparedRequestDto();
-        LoginResponseDto loginResponseDto = LoginDTOUtils.getPreparedResponseDto();
+        LoginRequestDto loginRequestDto = ResponseDTOUtils.getPreparedRequestDto();
+        String token = TokenUtils.getPreparedToken();
 
-        when(authService.login(any())).thenReturn(loginResponseDto);
+        when(authService.login(any())).thenReturn(token);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/login")
@@ -59,8 +57,7 @@ class GlobalSecurityFilterConfigTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.token").value(loginResponseDto.token()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value((Object) null))
-                .andDo(print());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.token").value(token))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").isEmpty());
     }
 }

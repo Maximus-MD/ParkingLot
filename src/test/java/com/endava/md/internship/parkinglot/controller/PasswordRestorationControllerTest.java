@@ -15,8 +15,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-
 @ExtendWith(MockitoExtension.class)
 class PasswordRestorationControllerTest {
 
@@ -43,7 +41,6 @@ class PasswordRestorationControllerTest {
                         .content(objectMapper.writeValueAsString(EmailDTOUtils.getPreparedDTO())))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.response").value("success"))
-                .andDo(print());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.result").value("Restored"));
     }
 }

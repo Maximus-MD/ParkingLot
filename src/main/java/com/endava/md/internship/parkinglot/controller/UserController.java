@@ -1,6 +1,7 @@
 package com.endava.md.internship.parkinglot.controller;
 
-import com.endava.md.internship.parkinglot.dto.RoleSwitchResponseDto;
+import com.endava.md.internship.parkinglot.utils.ResponseFactory;
+import com.endava.md.internship.parkinglot.dto.ResponseMessageDTO;
 import com.endava.md.internship.parkinglot.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -22,15 +23,13 @@ public class UserController {
     private final UserService userService;
 
     @PatchMapping("/switch-role/admin")
-    protected ResponseEntity<RoleSwitchResponseDto> switchUserRoleToAdmin(@Valid @RequestBody UserEmailDTO userEmail) {
-        RoleSwitchResponseDto responseDto = userService.setNewRole(userEmail.email, ROLE_ADMIN);
-        return ResponseEntity.ok(responseDto);
+    protected ResponseEntity<ResponseMessageDTO> switchUserRoleToAdmin(@Valid @RequestBody UserEmailDTO userEmail) {
+        return ResponseFactory.createResponse(userService.setNewRole(userEmail.email, ROLE_ADMIN));
     }
 
     @PatchMapping("/switch-role/regular")
-    protected ResponseEntity<RoleSwitchResponseDto> switchUserRoleToRegular(@Valid @RequestBody UserEmailDTO userEmail) {
-        RoleSwitchResponseDto responseDto = userService.setNewRole(userEmail.email, ROLE_REGULAR);
-        return ResponseEntity.ok(responseDto);
+    protected ResponseEntity<ResponseMessageDTO> switchUserRoleToRegular(@Valid @RequestBody UserEmailDTO userEmail) {
+        return ResponseFactory.createResponse(userService.setNewRole(userEmail.email, ROLE_REGULAR));
     }
 
     protected record UserEmailDTO(

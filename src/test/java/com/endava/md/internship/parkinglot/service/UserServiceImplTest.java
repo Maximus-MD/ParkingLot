@@ -4,17 +4,14 @@ import static com.endava.md.internship.parkinglot.model.RoleEnum.ROLE_ADMIN;
 import static com.endava.md.internship.parkinglot.model.RoleEnum.ROLE_REGULAR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.endava.md.internship.parkinglot.dto.RegistrationRequestDto;
-import com.endava.md.internship.parkinglot.dto.RegistrationResponseDto;
-import com.endava.md.internship.parkinglot.dto.RoleSwitchResponseDto;
+import com.endava.md.internship.parkinglot.dto.ResponseMessageDTO;
 import com.endava.md.internship.parkinglot.exception.CustomAuthException;
 import com.endava.md.internship.parkinglot.exception.RegistrationException;
 import com.endava.md.internship.parkinglot.exception.RoleNotFoundException;
@@ -24,7 +21,9 @@ import com.endava.md.internship.parkinglot.repository.RoleRepository;
 import com.endava.md.internship.parkinglot.repository.UserRepository;
 import com.endava.md.internship.parkinglot.security.JWTService;
 import com.endava.md.internship.parkinglot.service.impl.UserServiceImpl;
+import com.endava.md.internship.parkinglot.utils.RegistrationDTOUtils;
 import com.endava.md.internship.parkinglot.utils.RoleUtils;
+import com.endava.md.internship.parkinglot.utils.TokenUtils;
 import com.endava.md.internship.parkinglot.utils.UserUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -99,30 +98,21 @@ class UserServiceImplTest {
 
     @Test
     void shouldRegisterNewUserSuccessfully() {
-        RegistrationRequestDto requestDto = new RegistrationRequestDto(
-                "TestUser",
-                "unique@example.com",
-                "Password1@",
-                "987654321"
-        );
+        RegistrationRequestDto requestDto = RegistrationDTOUtils.getPreparedRequestDto();
+        User user = UserUtils.getPreparedUser();
+        Role regularRole = RoleUtils.getPreparedRegularRole();
+        String expectedToken = TokenUtils.getPreparedToken();
+
         when(userRepository.existsByEmailIgnoreCase(requestDto.email())).thenReturn(false);
         when(userRepository.existsByPhone(requestDto.phone())).thenReturn(false);
-
-        Role regularRole = new Role();
-        regularRole.setRoleName(ROLE_REGULAR);
         when(roleRepository.findByRoleName(ROLE_REGULAR)).thenReturn(Optional.of(regularRole));
+        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(jwtService.generateToken(anyString())).thenReturn(expectedToken);
 
-        User newUser = new User(null, "TestUser", "unique@example.com", passwordEncoder.encode("Password1@"), "987654321", regularRole);
-        when(userRepository.save(any(User.class))).thenReturn(newUser);
+        String actualToken = userService.registerNewUser(requestDto);
 
-        RegistrationResponseDto response = userService.registerNewUser(requestDto);
-
-        assertNotNull(response);
-        assertTrue(response.success());
-        assertNull(response.token());
-        assertNull(response.error());
-
-        verify(userRepository).save(any(User.class));
+        assertNotNull(actualToken);
+        assertEquals(actualToken, expectedToken);
     }
 
     @Test
@@ -135,11 +125,11 @@ class UserServiceImplTest {
         when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.of(user));
         when(roleRepository.findByRoleName(ROLE_REGULAR)).thenReturn(Optional.of(role));
 
-        RoleSwitchResponseDto actualResponseDTO = userService.setNewRole(expectedEmail, ROLE_REGULAR);
+        ResponseMessageDTO actualResponseDTO = userService.setNewRole(expectedEmail, ROLE_REGULAR);
 
-        assertEquals(expectedEmail, actualResponseDTO.email());
-        assertTrue(actualResponseDTO.result());
-        assertEquals(ROLE_ADMIN.name(), actualResponseDTO.newRole());
+        assertEquals(expectedEmail, actualResponseDTO.getEmail());
+        assertTrue(actualResponseDTO.isSuccess());
+        assertEquals(ROLE_ADMIN.name(), actualResponseDTO.getResult());
     }
 
     @Test
@@ -151,11 +141,11 @@ class UserServiceImplTest {
         when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.of(user));
         when(roleRepository.findByRoleName(ROLE_REGULAR)).thenReturn(Optional.of(role));
 
-        RoleSwitchResponseDto actualResponseDTO = userService.setNewRole(expectedEmail, ROLE_REGULAR);
+        ResponseMessageDTO actualResponseDTO = userService.setNewRole(expectedEmail, ROLE_REGULAR);
 
-        assertEquals(expectedEmail, actualResponseDTO.email());
-        assertTrue(actualResponseDTO.result());
-        assertEquals(ROLE_REGULAR.name(), actualResponseDTO.newRole());
+        assertEquals(expectedEmail, actualResponseDTO.getEmail());
+        assertTrue(actualResponseDTO.isSuccess());
+        assertEquals(ROLE_REGULAR.name(), actualResponseDTO.getResult());
     }
 
     @Test

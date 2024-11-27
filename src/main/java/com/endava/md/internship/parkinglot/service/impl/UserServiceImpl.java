@@ -1,8 +1,7 @@
 package com.endava.md.internship.parkinglot.service.impl;
 
 import com.endava.md.internship.parkinglot.dto.RegistrationRequestDto;
-import com.endava.md.internship.parkinglot.dto.RegistrationResponseDto;
-import com.endava.md.internship.parkinglot.dto.RoleSwitchResponseDto;
+import com.endava.md.internship.parkinglot.dto.ResponseMessageDTO;
 import com.endava.md.internship.parkinglot.exception.CustomAuthException;
 import com.endava.md.internship.parkinglot.exception.EmailSendException;
 import com.endava.md.internship.parkinglot.exception.RegistrationException;
@@ -41,17 +40,16 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public RegistrationResponseDto registerNewUser(RegistrationRequestDto registrationDto) {
+    public String registerNewUser(RegistrationRequestDto registrationDto) {
         checkEmailAndPhoneAvailability(registrationDto);
         User user = convertToUser(registrationDto);
         userRepository.save(user);
 
-        String generateToken = jwtService.generateToken(registrationDto.email());
-        return new RegistrationResponseDto(true, generateToken, null);
+        return jwtService.generateToken(registrationDto.email());
     }
 
     @Transactional
-    public RoleSwitchResponseDto setNewRole(final String email, final RoleEnum role) {
+    public ResponseMessageDTO setNewRole(final String email, final RoleEnum role) {
         final String DEPRIVED = "You have been deprived of Admin role for Parking Lot app.";
         final String GRANTED = "You have been granted an Admin role for Parking Lot app.";
 
@@ -59,7 +57,7 @@ public class UserServiceImpl implements UserService {
                 () -> new CustomAuthException(USER_NOT_FOUND, String.format("User with email %s not found", email)));
 
         if (user.getRole().getRoleName() == role) {
-            return new RoleSwitchResponseDto(email, true, user.getRole().getRoleName().name());
+            return new ResponseMessageDTO(true, email, user.getRole().getRoleName().name());
         }
 
         Role newRole = switchRole(user);
@@ -69,7 +67,7 @@ public class UserServiceImpl implements UserService {
                 .equals(ROLE_REGULAR.name()) ? DEPRIVED : GRANTED;
         sendRoleChangeEmail(email, message);
 
-        return new RoleSwitchResponseDto(email, true, newRole.getRoleName().name());
+        return new ResponseMessageDTO(true, email, user.getRole().getRoleName().name());
     }
 
     private void sendRoleChangeEmail(String mailTo, String message) {

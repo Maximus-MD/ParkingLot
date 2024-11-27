@@ -1,7 +1,8 @@
 package com.endava.md.internship.parkinglot.controller;
 
 import com.endava.md.internship.parkinglot.dto.RegistrationRequestDto;
-import com.endava.md.internship.parkinglot.dto.RegistrationResponseDto;
+import com.endava.md.internship.parkinglot.dto.ResponseDTO;
+import com.endava.md.internship.parkinglot.utils.ResponseFactory;
 import com.endava.md.internship.parkinglot.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,8 @@ public class RegistrationController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<RegistrationResponseDto> registerUser(@Valid @RequestBody RegistrationRequestDto registrationDto) {
-      RegistrationResponseDto response = userService.registerNewUser(registrationDto);
-      return ResponseEntity.ok(response);
+    public ResponseEntity<ResponseDTO> registerUser(@Valid @RequestBody RegistrationRequestDto registrationDto) {
+        return ResponseFactory.createResponse(userService.registerNewUser(registrationDto));
     }
 }
 

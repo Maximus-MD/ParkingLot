@@ -1,9 +1,9 @@
 package com.endava.md.internship.parkinglot.controller;
 
 import com.endava.md.internship.parkinglot.dto.LoginRequestDto;
-import com.endava.md.internship.parkinglot.dto.LoginResponseDto;
 import com.endava.md.internship.parkinglot.service.AuthService;
-import com.endava.md.internship.parkinglot.utils.LoginDTOUtils;
+import com.endava.md.internship.parkinglot.utils.ResponseDTOUtils;
+import com.endava.md.internship.parkinglot.utils.TokenUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @ExtendWith(MockitoExtension.class)
 class LoginControllerTest {
@@ -41,10 +40,10 @@ class LoginControllerTest {
 
     @Test
     void loginTest_ReturnsResponseEntityLoginResponseDTO() throws Exception {
-        LoginRequestDto loginRequestDto = LoginDTOUtils.getPreparedRequestDto();
-        LoginResponseDto loginResponseDto = LoginDTOUtils.getPreparedResponseDto();
+        LoginRequestDto loginRequestDto = ResponseDTOUtils.getPreparedRequestDto();
+        String token = TokenUtils.getPreparedToken();
 
-        when(authService.login(any(LoginRequestDto.class))).thenReturn(loginResponseDto);
+        when(authService.login(any(LoginRequestDto.class))).thenReturn(token);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/login")
@@ -53,8 +52,7 @@ class LoginControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.token").value(loginResponseDto.token()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error").value((Object) null))
-                .andDo(print());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.token").value(token))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").isEmpty());
     }
 }

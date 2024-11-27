@@ -1,13 +1,13 @@
 package com.endava.md.internship.parkinglot.service;
 
 import com.endava.md.internship.parkinglot.dto.LoginRequestDto;
-import com.endava.md.internship.parkinglot.dto.LoginResponseDto;
+import com.endava.md.internship.parkinglot.dto.ResponseDTO;
 import com.endava.md.internship.parkinglot.exception.CustomAuthException;
 import com.endava.md.internship.parkinglot.model.User;
 import com.endava.md.internship.parkinglot.repository.UserRepository;
 import com.endava.md.internship.parkinglot.security.JWTService;
 import com.endava.md.internship.parkinglot.service.impl.AuthServiceImpl;
-import com.endava.md.internship.parkinglot.utils.LoginDTOUtils;
+import com.endava.md.internship.parkinglot.utils.ResponseDTOUtils;
 import com.endava.md.internship.parkinglot.utils.UserUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,23 +42,23 @@ class AuthServiceImplTest {
     @Test
     void loginTest_ReturnsLoginResponseDto() {
         User user = UserUtils.getPreparedUser();
-        LoginRequestDto loginRequestDto = LoginDTOUtils.getPreparedRequestDto();
-        LoginResponseDto loginResponseDto = LoginDTOUtils.getPreparedResponseDto();
+        LoginRequestDto loginRequestDto = ResponseDTOUtils.getPreparedRequestDto();
+        ResponseDTO responseDTO = ResponseDTOUtils.getPreparedResponseDTO();
 
         when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.of(user));
 
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
 
-        when(jwtService.generateToken(anyString())).thenReturn(loginResponseDto.token());
+        when(jwtService.generateToken(anyString())).thenReturn(responseDTO.getToken());
 
-        LoginResponseDto resultLoginResponseDTO = authService.login(loginRequestDto);
+        String resultToken = authService.login(loginRequestDto);
 
-        assertEquals(resultLoginResponseDTO.token(), loginResponseDto.token());
+        assertEquals(resultToken, responseDTO.getToken());
     }
 
     @Test
     void loginTest_WhenUserNotExist_ThrowsCustomAuthException() {
-        LoginRequestDto loginRequestDto = LoginDTOUtils.getPreparedRequestDto();
+        LoginRequestDto loginRequestDto = ResponseDTOUtils.getPreparedRequestDto();
 
         when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.empty());
 
@@ -71,7 +71,7 @@ class AuthServiceImplTest {
     @Test
     void loginTest_WhenUserExistsButPasswordsAreNotMatching_ThrowsCustomAuthException() {
         User user = UserUtils.getPreparedUser();
-        LoginRequestDto loginRequestDto = LoginDTOUtils.getPreparedRequestDto();
+        LoginRequestDto loginRequestDto = ResponseDTOUtils.getPreparedRequestDto();
 
         when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.of(user));
 

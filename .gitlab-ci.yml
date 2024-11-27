@@ -76,7 +76,7 @@ deploy_nexus:
     - echo "Deploying artifacts to Nexus"
     - |
       curl -v -u $NEXUS_USER:$NEXUS_PASSWORD \
-      ${NEXUS_URL}/repository/maven-snapshots/${GROUP_ID//.//}/${ARTIFACT_ID}/${ARTIFACT_ID}-${VERSION}.jar \
+      ${NEXUS_URL}/repository/maven-snapshots/${GROUP_ID//.//}/${ARTIFACT_ID}/${ARTIFACT_ID}-${VERSION}-${CI_COMMIT_SHORT_SHA}.jar \
       --upload-file target/${ARTIFACT_ID}-${VERSION}.jar
     - echo "VERSION=${VERSION}" >> build.env
   artifacts:

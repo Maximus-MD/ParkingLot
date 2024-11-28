@@ -35,6 +35,9 @@ public class CustomExceptionHandler {
     @Value("${message.server-error}")
     private int serverError;
 
+    @Value("${message.parking-not-found}")
+    private int parkingLotNotFound;
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseDTO> handleValidationExceptions(MethodArgumentNotValidException exception) {
         log.error("Validation exception", exception);
@@ -56,6 +59,12 @@ public class CustomExceptionHandler {
 
             case INVALID_JWT -> ResponseFactory.createResponse(Set.of(invalidJwt));
         };
+    }
+
+    @ExceptionHandler(ParkingLotException.class)
+    public ResponseEntity<ResponseGenericErrorDTO> handleParkingLotException(final ParkingLotException exception) {
+        log.error(exception.getMessage());
+        return ResponseFactory.createResponse(parkingLotNotFound);
     }
 
     @ExceptionHandler(RegistrationException.class)

@@ -1,5 +1,6 @@
 package com.endava.md.internship.parkinglot.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -39,7 +40,7 @@ public class ParkingSpot {
     @Column(name = "occupied", nullable = false)
     private boolean occupied;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "level_id")
     private ParkingLevel parkingLevel;
 }

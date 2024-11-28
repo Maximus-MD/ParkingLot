@@ -70,4 +70,21 @@ class ParkingLotControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error").isEmpty());
     }
+
+    @Test
+    void shouldReturnOkStatusWithResponse_WhenParkingLotDeleteIsSuccessful() throws Exception {
+        ParkingLotRequestDto requestDto = ParkingLotDTOUtils.getPreparedParkingLotRequestDto();
+        ParkingLotResponseDto responseDto = ParkingLotDTOUtils.getPreparedParkingLotResponseDto();
+
+        when(parkingLotService.deleteParkingLot(any())).thenReturn(responseDto);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/parking-lots/delete/Kaufland")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").isEmpty());
+    }
 }

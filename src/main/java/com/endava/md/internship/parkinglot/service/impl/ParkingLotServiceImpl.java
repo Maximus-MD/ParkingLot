@@ -59,8 +59,10 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     @Override
     @Transactional
     public ParkingLotResponseDto deleteParkingLot(String name){
-        parkingLotRepository.deleteByName(name);
+        ParkingLot parkingLot = parkingLotRepository.findByName(name)
+                .orElseThrow(() -> new ParkingLotException(String.format("Parking lot %s not found.", name)));
 
+        parkingLotRepository.delete(parkingLot);
         return buildParkingLotResponseDto();
     }
 

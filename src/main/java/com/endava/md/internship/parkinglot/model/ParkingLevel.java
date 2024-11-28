@@ -40,7 +40,7 @@ public class ParkingLevel {
     @Column(name = "name", nullable = false)
     private String levelName;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "parking_lot_id")
     private ParkingLot parkingLot;
 

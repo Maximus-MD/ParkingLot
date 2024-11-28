@@ -36,6 +36,7 @@ public class GlobalSecurityFilterConfig {
                         .requestMatchers(HttpMethod.PATCH, "/restore-password").permitAll()
                         .requestMatchers(HttpMethod.GET, "/actuator/health", "/favicon.ico").permitAll()
                         .requestMatchers("/parking-lots/create").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/parking-lots/delete/").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(handler -> handler

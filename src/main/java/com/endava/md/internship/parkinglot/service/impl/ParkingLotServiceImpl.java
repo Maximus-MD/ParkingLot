@@ -56,6 +56,14 @@ public class ParkingLotServiceImpl implements ParkingLotService {
                 .toList();
     }
 
+    @Override
+    @Transactional
+    public ParkingLotResponseDto deleteParkingLot(String name){
+        parkingLotRepository.deleteByName(name);
+
+        return buildParkingLotResponseDto();
+    }
+
     private ParkingLevel buildParkingLevel(String levelName, Integer spotNumber, ParkingLot parkingLot) {
         ParkingLevel parkingLevel = new ParkingLevel();
 

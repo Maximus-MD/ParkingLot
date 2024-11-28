@@ -40,8 +40,8 @@ public class ParkingLevel {
     @Column(name = "name", nullable = false)
     private String levelName;
 
-    @ManyToOne()
-    @JoinColumn(name = "parking_lot_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "parking_lot_id")
     private ParkingLot parkingLot;
 
     @OneToMany(mappedBy = "parkingLevel", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)

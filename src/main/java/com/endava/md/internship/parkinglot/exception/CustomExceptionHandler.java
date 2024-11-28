@@ -1,6 +1,7 @@
 package com.endava.md.internship.parkinglot.exception;
 
 import com.endava.md.internship.parkinglot.dto.ResponseDTO;
+import com.endava.md.internship.parkinglot.dto.ResponseGenericErrorDTO;
 import com.endava.md.internship.parkinglot.utils.ResponseFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,13 +48,13 @@ public class CustomExceptionHandler {
     public ResponseEntity<ResponseDTO> handleCustomAuthException(final CustomAuthException authException) {
         log.error(authException.getMessage());
         return switch (authException.getAuthErrorType()) {
-            case JWT_TOKEN_GENERATION_ERROR -> ResponseFactory.createResponse(jwtTokenGenerationError);
+            case JWT_TOKEN_GENERATION_ERROR -> ResponseFactory.createResponse(Set.of(jwtTokenGenerationError));
 
-            case BAD_CREDENTIALS -> ResponseFactory.createResponse(badCredentials);
+            case BAD_CREDENTIALS -> ResponseFactory.createResponse(Set.of(badCredentials));
 
-            case USER_NOT_FOUND -> ResponseFactory.createResponse(userNotFound);
+            case USER_NOT_FOUND -> ResponseFactory.createResponse(Set.of(userNotFound));
 
-            case INVALID_JWT -> ResponseFactory.createResponse(invalidJwt);
+            case INVALID_JWT -> ResponseFactory.createResponse(Set.of(invalidJwt));
         };
     }
 
@@ -64,7 +65,7 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(Throwable.class)
-    public ResponseEntity<ResponseDTO> handleGenericError(Throwable throwable) {
+    public ResponseEntity<ResponseGenericErrorDTO> handleGenericError(Throwable throwable) {
         StackTraceElement traceElement = throwable.getStackTrace()[0];
         log.error("Generic error in class: {}, method: {}, line: {}, the error: {}",
                 traceElement.getClassName(), traceElement.getMethodName(),

@@ -57,7 +57,7 @@ public class ParkingLot {
     @Column(name = "temporary_closed", nullable = false)
     private boolean temporaryClosed;
 
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "parking_lot_days",
             joinColumns = @JoinColumn(name = "parking_lot_id"),

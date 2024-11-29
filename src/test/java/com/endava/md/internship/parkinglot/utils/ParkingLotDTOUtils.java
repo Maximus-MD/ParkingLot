@@ -52,6 +52,58 @@ public class ParkingLotDTOUtils {
         );
     }
 
+    public static ParkingLotRequestDto getPreparedParkingLotRequestDtoWithOperatesNonStopTrue() {
+        return new ParkingLotRequestDto(
+                "Kaufland",
+                "str. Mircea cel Batran 20",
+                Time.valueOf("10:30:00"),
+                Time.valueOf("20:30:00"),
+                true,
+                false,
+                List.of(new WorkingDayDto(MONDAY)),
+                Map.of("A", 10)
+        );
+    }
+
+    public static ParkingLotRequestDto getPreparedParkingLotRequestDtoWithNullTimeAndNonStopFalse() {
+        return new ParkingLotRequestDto(
+                "Kaufland",
+                "str. Mircea cel Batran 20",
+                null,
+                null,
+                false,
+                false,
+                List.of(new WorkingDayDto(MONDAY)),
+                Map.of("A", 10)
+        );
+    }
+
+    public static ParkingLotRequestDto getPreparedParkingLotRequestDtoWithNullStartTimeAndNonStopFalse() {
+        return new ParkingLotRequestDto(
+                "Kaufland",
+                "str. Mircea cel Batran 20",
+                null,
+                Time.valueOf("20:30:00"),
+                false,
+                false,
+                List.of(new WorkingDayDto(MONDAY)),
+                Map.of("A", 10)
+        );
+    }
+
+    public static ParkingLotRequestDto getPreparedParkingLotRequestDtoWithNullEndTimeAndNonStopFalse() {
+        return new ParkingLotRequestDto(
+                "Kaufland",
+                "str. Mircea cel Batran 20",
+                Time.valueOf("20:30:00"),
+                null,
+                false,
+                false,
+                List.of(new WorkingDayDto(MONDAY)),
+                Map.of("A", 10)
+        );
+    }
+
     public static ParkingLotResponseDto getPreparedParkingLotResponseDto() {
         return new ParkingLotResponseDto(
                 true,

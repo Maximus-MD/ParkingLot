@@ -8,8 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,7 +25,7 @@ class CustomUniquePhoneValidatorTest {
         String phone = "123456789";
         when(userRepository.existsByPhone(phone)).thenReturn(false);
 
-        assertTrue(customUniquePhoneValidator.isValid(phone, null));
+        assertThat(customUniquePhoneValidator.isValid(phone, null)).isTrue();
     }
 
     @Test
@@ -34,6 +33,6 @@ class CustomUniquePhoneValidatorTest {
         String phone = "123456789";
         when(userRepository.existsByPhone(phone)).thenReturn(true);
 
-        assertFalse(customUniquePhoneValidator.isValid(phone, null));
+        assertThat(customUniquePhoneValidator.isValid(phone, null)).isFalse();
     }
 }

@@ -33,7 +33,7 @@ class ParkingLotControllerTest {
     private ParkingLotService parkingLotService;
 
     @MockBean
-    private ParkingLotRepository ParkingLotRepository;
+    private ParkingLotRepository parkingLotRepository;
 
     @MockBean
     private UniqueParkingNameValidator uniqueParkingNameValidator;

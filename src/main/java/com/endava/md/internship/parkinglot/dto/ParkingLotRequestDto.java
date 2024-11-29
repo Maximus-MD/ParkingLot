@@ -1,16 +1,18 @@
 package com.endava.md.internship.parkinglot.dto;
 
-import com.endava.md.internship.parkinglot.validation.annotation.NotEmptyWorkingTimes;
+import com.endava.md.internship.parkinglot.validation.annotation.AccessibleParkingLevel;
+import com.endava.md.internship.parkinglot.validation.annotation.NotEmptyWorkingDays;
+import com.endava.md.internship.parkinglot.validation.annotation.OperatesNonStopEnabled;
 import com.endava.md.internship.parkinglot.validation.annotation.UniqueParkingAddress;
 import com.endava.md.internship.parkinglot.validation.annotation.UniqueParkingName;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.sql.Time;
 import java.util.List;
 import java.util.Map;
 
+@OperatesNonStopEnabled
 public record ParkingLotRequestDto(
 
         @NotBlank(message = "{message.empty-parking-name}")
@@ -23,20 +25,19 @@ public record ParkingLotRequestDto(
         @UniqueParkingAddress
         String address,
 
-        @NotNull(message = "{parking-time-null-value}")
         Time startTime,
 
-        @NotNull(message = "{parking-time-null-value}")
         Time endTime,
 
         boolean operatesNonStop,
 
         boolean temporaryClosed,
 
-        @NotEmptyWorkingTimes
+        @NotEmptyWorkingDays
         List<WorkingDayDto> workingDays,
 
-        @Size(min = 1, max = 5, message = "{message.invalid-parking-levels-value}")
+        @Size(min = 1, max = 5, message = "{message.incorrect-parking-levels-count}")
+        @AccessibleParkingLevel
         Map<String, Integer> parkingLevels
 ) {
 }

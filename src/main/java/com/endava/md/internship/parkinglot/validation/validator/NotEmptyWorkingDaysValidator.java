@@ -11,6 +11,6 @@ public class NotEmptyWorkingDaysValidator implements ConstraintValidator<NotEmpt
 
     @Override
     public boolean isValid(List<WorkingDayDto> workingDaysDto, ConstraintValidatorContext constraintValidatorContext) {
-        return !workingDaysDto.isEmpty() && workingDaysDto.size() <= 7;
+        return !workingDaysDto.isEmpty();
     }
 }

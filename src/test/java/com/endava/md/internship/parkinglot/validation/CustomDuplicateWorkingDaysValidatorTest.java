@@ -10,8 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.DayOfWeek;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class CustomDuplicateWorkingDaysValidatorTest {
@@ -34,7 +33,7 @@ class CustomDuplicateWorkingDaysValidatorTest {
 
         boolean isValid = duplicateWorkingDaysValidator.isValid(workingDays, null);
 
-        assertFalse(isValid);
+        assertThat(isValid).isFalse();
     }
 
     @Test
@@ -47,6 +46,7 @@ class CustomDuplicateWorkingDaysValidatorTest {
 
         boolean isValid = duplicateWorkingDaysValidator.isValid(workingDays, null);
 
-        assertTrue(isValid);
+        assertThat(isValid).isTrue();
+
     }
 }

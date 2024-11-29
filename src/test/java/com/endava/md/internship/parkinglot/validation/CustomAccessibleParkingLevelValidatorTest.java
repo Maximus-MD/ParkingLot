@@ -13,8 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class CustomAccessibleParkingLevelValidatorTest {
@@ -28,21 +27,13 @@ class CustomAccessibleParkingLevelValidatorTest {
         parkingLevels = new HashMap<>();
     }
 
-    private static Stream<Arguments> provideParkingLevels() {
-        return Stream.of(
-                Arguments.of("B", 200),
-                Arguments.of("B", 0),
-                Arguments.of("H", 1)
-        );
-    }
-
     @Test
     void isValid_CorrectParkingLevel_ReturnsTrue() {
         parkingLevels.put("A", 1);
 
         boolean isValid = accessibleParkingLevelValidator.isValid(parkingLevels, null);
 
-        assertTrue(isValid);
+        assertThat(isValid).isTrue();
     }
 
     @ParameterizedTest
@@ -52,7 +43,7 @@ class CustomAccessibleParkingLevelValidatorTest {
 
         boolean isValid = accessibleParkingLevelValidator.isValid(parkingLevels, null);
 
-        assertFalse(isValid);
+        assertThat(isValid).isFalse();
     }
 
     @Test
@@ -61,7 +52,14 @@ class CustomAccessibleParkingLevelValidatorTest {
 
         boolean isValid = accessibleParkingLevelValidator.isValid(parkingLevels, null);
 
-        assertTrue(isValid);
+        assertThat(isValid).isTrue();
     }
 
+    private static Stream<Arguments> provideParkingLevels() {
+        return Stream.of(
+                Arguments.of("B", 200),
+                Arguments.of("B", 0),
+                Arguments.of("H", 1)
+        );
+    }
 }

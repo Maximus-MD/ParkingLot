@@ -1,6 +1,5 @@
 package com.endava.md.internship.parkinglot.validation;
 
-import com.endava.md.internship.parkinglot.model.ParkingLot;
 import com.endava.md.internship.parkinglot.repository.ParkingLotRepository;
 import com.endava.md.internship.parkinglot.validation.validator.UniqueParkingAddressValidator;
 import org.junit.jupiter.api.Test;
@@ -9,10 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,16 +24,16 @@ class CustomUniqueParkingAddressValidatorTest {
     @Test
     void isValid_ParkingAddressIsUnique_ReturnsTrue() {
         String parkingAddress = "uniqueParkingAddress";
-        when(parkingLotRepository.findByAddress(parkingAddress)).thenReturn(Optional.empty());
+        when(parkingLotRepository.existsByAddress(parkingAddress)).thenReturn(false);
 
-        assertTrue(uniqueParkingAddressValidator.isValid(parkingAddress, null));
+        assertThat(uniqueParkingAddressValidator.isValid(parkingAddress, null)).isTrue();
     }
 
     @Test
     void isValid_ParkingAddressIsNotUnique_ReturnsFalse() {
         String parkingAddress = "notUniquesParkingAddress";
-        when(parkingLotRepository.findByAddress(parkingAddress)).thenReturn(Optional.of(new ParkingLot()));
+        when(parkingLotRepository.existsByAddress(parkingAddress)).thenReturn(true);
 
-        assertFalse(uniqueParkingAddressValidator.isValid(parkingAddress, null));
+        assertThat(uniqueParkingAddressValidator.isValid(parkingAddress, null)).isFalse();
     }
 }

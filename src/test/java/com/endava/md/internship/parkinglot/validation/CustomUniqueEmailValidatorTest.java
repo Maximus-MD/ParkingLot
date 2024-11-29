@@ -8,8 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,7 +25,7 @@ class CustomUniqueEmailValidatorTest {
         String email = "test@endava.com";
         when(userRepository.existsByEmailIgnoreCase(email)).thenReturn(false);
 
-        assertTrue(customUniqueEmailValidator.isValid(email, null));
+        assertThat(customUniqueEmailValidator.isValid(email, null)).isTrue();
     }
 
     @Test
@@ -34,6 +33,6 @@ class CustomUniqueEmailValidatorTest {
         String email = "test@endava.com";
         when(userRepository.existsByEmailIgnoreCase(email)).thenReturn(true);
 
-        assertFalse(customUniqueEmailValidator.isValid(email, null));
+        assertThat(customUniqueEmailValidator.isValid(email, null)).isFalse();
     }
 }

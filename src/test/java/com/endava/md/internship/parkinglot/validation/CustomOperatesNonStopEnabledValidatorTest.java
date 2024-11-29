@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class CustomOperatesNonStopEnabledValidatorTest {
@@ -27,7 +26,7 @@ class CustomOperatesNonStopEnabledValidatorTest {
 
         boolean operatesNonStopIsTrue = operatesNonStopEnabledValidator.isValid(parkingLotRequestDto, null);
 
-        assertTrue(operatesNonStopIsTrue);
+        assertThat(operatesNonStopIsTrue).isTrue();
     }
 
     @Test
@@ -36,7 +35,7 @@ class CustomOperatesNonStopEnabledValidatorTest {
 
         boolean operatesNonStopIsTrue = operatesNonStopEnabledValidator.isValid(parkingLotRequestDto, null);
 
-        assertFalse(operatesNonStopIsTrue);
+        assertThat(operatesNonStopIsTrue).isFalse();
     }
 
     @Test
@@ -45,7 +44,7 @@ class CustomOperatesNonStopEnabledValidatorTest {
 
         boolean operatesNonStopIsTrue = operatesNonStopEnabledValidator.isValid(parkingLotRequestDto, null);
 
-        assertTrue(operatesNonStopIsTrue);
+        assertThat(operatesNonStopIsTrue).isTrue();
     }
 
     @Test
@@ -54,15 +53,15 @@ class CustomOperatesNonStopEnabledValidatorTest {
 
         boolean operatesNonStopIsTrue = operatesNonStopEnabledValidator.isValid(parkingLotRequestDto, null);
 
-        assertFalse(operatesNonStopIsTrue);
+        assertThat(operatesNonStopIsTrue).isFalse();
     }
 
     @Test
-    void isValid_OperatesNonStopIsFalseAndEndTimeIsNull_ReturnsTrue() {
+    void isValid_OperatesNonStopIsFalseAndEndTimeIsNull_ReturnsFalse() {
         ParkingLotRequestDto parkingLotRequestDto = ParkingLotDTOUtils.getPreparedParkingLotRequestDtoWithNullEndTimeAndNonStopFalse();
 
         boolean operatesNonStopIsTrue = operatesNonStopEnabledValidator.isValid(parkingLotRequestDto, null);
 
-        assertFalse(operatesNonStopIsTrue);
+        assertThat(operatesNonStopIsTrue).isFalse();
     }
 }

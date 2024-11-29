@@ -14,6 +14,6 @@ public class UniqueParkingAddressValidator implements ConstraintValidator<Unique
 
     @Override
     public boolean isValid(String address, ConstraintValidatorContext context) {
-        return parkingLotRepository.findByAddress(address).isEmpty();
+        return !parkingLotRepository.existsByAddress(address);
     }
 }

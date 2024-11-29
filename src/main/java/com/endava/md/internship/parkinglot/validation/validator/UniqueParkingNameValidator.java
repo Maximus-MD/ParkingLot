@@ -14,6 +14,6 @@ public class UniqueParkingNameValidator implements ConstraintValidator<UniquePar
 
     @Override
     public boolean isValid(String name, ConstraintValidatorContext context) {
-        return parkingLotRepository.findByName(name).isEmpty();
+        return !parkingLotRepository.existsByName(name);
     }
 }

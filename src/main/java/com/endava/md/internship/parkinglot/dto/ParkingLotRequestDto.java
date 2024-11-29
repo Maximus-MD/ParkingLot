@@ -1,6 +1,7 @@
 package com.endava.md.internship.parkinglot.dto;
 
 import com.endava.md.internship.parkinglot.validation.annotation.AccessibleParkingLevel;
+import com.endava.md.internship.parkinglot.validation.annotation.DuplicateWorkingDays;
 import com.endava.md.internship.parkinglot.validation.annotation.NotEmptyWorkingDays;
 import com.endava.md.internship.parkinglot.validation.annotation.OperatesNonStopEnabled;
 import com.endava.md.internship.parkinglot.validation.annotation.UniqueParkingAddress;
@@ -34,6 +35,7 @@ public record ParkingLotRequestDto(
         boolean temporaryClosed,
 
         @NotEmptyWorkingDays
+        @DuplicateWorkingDays
         List<WorkingDayDto> workingDays,
 
         @Size(min = 1, max = 5, message = "{message.incorrect-parking-levels-count}")

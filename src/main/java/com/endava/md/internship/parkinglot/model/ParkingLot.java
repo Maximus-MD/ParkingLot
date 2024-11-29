@@ -58,10 +58,7 @@ public class ParkingLot {
     private boolean temporaryClosed;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "parking_lot_days",
-            joinColumns = @JoinColumn(name = "parking_lot_id"),
-            inverseJoinColumns = @JoinColumn(name = "day_id"))
+    @JoinTable(name = "parking_lot_days", joinColumns = @JoinColumn(name = "parking_lot_id"), inverseJoinColumns = @JoinColumn(name = "day_id"))
     private List<WorkingDay> workingDays;
 
     @OneToMany(mappedBy = "parkingLot", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)

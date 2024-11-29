@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static com.endava.md.internship.parkinglot.utils.ParkingLotDTOUtils.getPreparedParkingLotRequestDtoNullTime;
 import static com.endava.md.internship.parkinglot.utils.ParkingLotDTOUtils.getPreparedParkingLotRequestDtoWithInvalidDay;
+import static com.endava.md.internship.parkinglot.utils.ParkingLotUtils.getPreparedParkingLot;
 import static com.endava.md.internship.parkinglot.utils.ParkingLotUtils.getPreparedParkingLotWithNullTime;
 import static java.time.DayOfWeek.FRIDAY;
 import static java.time.DayOfWeek.MONDAY;
@@ -49,7 +50,7 @@ class ParkingLotServiceTest {
     private ParkingLotServiceImpl parkingLotService;
 
     @Test
-    void testParkingLotCreationWhenAvailable() {
+    void testCreateParkingLot_WhenItDoesNotExist() {
 
         ParkingLotRequestDto parkingLotRequestDto = ParkingLotDTOUtils.getPreparedParkingLotRequestDto();
 
@@ -88,7 +89,7 @@ class ParkingLotServiceTest {
     }
 
     @Test
-    void testWhenOperatesNonStopEqualsTrue(){
+    void testCreateParkingLot_WhenOperatesNonStopIsTrue(){
         ParkingLotRequestDto requestDto = getPreparedParkingLotRequestDtoNullTime();
 
         when(workingDayRepository.findByDayName(MONDAY))
@@ -116,5 +117,16 @@ class ParkingLotServiceTest {
 
         verify(parkingLotRepository).save(any(ParkingLot.class));
         verify(parkingLevelRepository).save(any(ParkingLevel.class));
+    }
+
+    @Test
+    void testDeleteParkingLot_WhenItExists(){
+        ParkingLot parkingLot = getPreparedParkingLot();
+
+        when(parkingLotRepository.findByName(parkingLot.getName())).thenReturn(Optional.of(parkingLot));
+
+        parkingLotService.deleteParkingLot(parkingLot.getName());
+
+        verify(parkingLotRepository).delete(parkingLot);
     }
 }

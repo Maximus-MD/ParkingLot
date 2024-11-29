@@ -36,6 +36,9 @@ class CustomExceptionHandlerTest {
     @Mock
     private EmailSendException emailSendException;
 
+    @Mock
+    private ParkingLotException parkingLotException;
+
     @InjectMocks
     CustomExceptionHandler exceptionHandler;
 
@@ -57,6 +60,9 @@ class CustomExceptionHandlerTest {
     @Value("${message.invalid-name}")
     private int invalidNameCode;
 
+    @Value("${message.parking-not-found}")
+    private int parkingNotFoundCode;
+
     @Test
     void handleValidationExceptionsTest() {
         BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(new Object(), "objectName");
@@ -69,6 +75,19 @@ class CustomExceptionHandlerTest {
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isSuccess());
         assertThat(response.getBody().getError()).containsExactly(invalidNameCode);
+    }
+
+    @Test
+    void handleParkingNotFoundTest() throws Exception {
+        Field serverErrorField = CustomExceptionHandler.class.getDeclaredField("parkingLotNotFound");
+        serverErrorField.setAccessible(true);
+        serverErrorField.set(exceptionHandler, parkingNotFoundCode);
+
+        parkingLotException = new ParkingLotException(parkingNotFoundCode + "not found");
+        ResponseEntity<ResponseGenericErrorDTO> response = exceptionHandler.handleParkingLotException(parkingLotException);
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().isSuccess());
+        assertThat(response.getBody().getError()).containsExactly(parkingNotFoundCode);
     }
 
     @Test

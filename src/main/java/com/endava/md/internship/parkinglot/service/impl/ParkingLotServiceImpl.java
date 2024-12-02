@@ -1,5 +1,6 @@
 package com.endava.md.internship.parkinglot.service.impl;
 
+import com.endava.md.internship.parkinglot.dto.ParkingLotGeneralDetailsDto;
 import com.endava.md.internship.parkinglot.dto.ParkingLotRequestDto;
 import com.endava.md.internship.parkinglot.dto.ParkingLotResponseDto;
 import com.endava.md.internship.parkinglot.dto.WorkingDayDto;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.endava.md.internship.parkinglot.model.ParkingSpotType.REGULAR;
@@ -124,5 +126,41 @@ public class ParkingLotServiceImpl implements ParkingLotService {
                 .map(dto -> workingDayRepository.findByDayName(dto.day()).orElseThrow(
                         () -> new ParkingLotException(String.format("Day %s not found.", dto.day()))
                 )).toList();
+    }
+
+    @Override
+    public List<ParkingLotGeneralDetailsDto> getAllParkingLots() {
+        List<ParkingLot> parkingLots = parkingLotRepository.findAll();
+        return parkingLots.stream()
+                .map(this::convertToParkingLotGeneralDetailsDto)
+                .toList();
+    }
+
+    private ParkingLotGeneralDetailsDto convertToParkingLotGeneralDetailsDto(ParkingLot parkingLot) {
+        String operatingHours = "";
+        String operatingDays = "";
+
+        if (!parkingLot.isTemporaryClosed() && !parkingLot.isOperatesNonStop()) {
+            operatingHours = String.format("%tR - %tR", parkingLot.getStartTime(), parkingLot.getEndTime());
+            operatingDays = formatOperatingDays(parkingLot.getWorkingDays());
+        }
+
+        return new ParkingLotGeneralDetailsDto(
+                parkingLot.getParkingLotId(),
+                parkingLot.getName(),
+                operatingHours,
+                operatingDays,
+                parkingLot.isTemporaryClosed(),
+                parkingLot.isOperatesNonStop()
+        );
+    }
+
+    private String formatOperatingDays(List<WorkingDay> workingDays) {
+        if (workingDays == null || workingDays.isEmpty()) {
+            return "";
+        }
+        return workingDays.stream()
+                .map(day -> day.getDayName().name())
+                .collect(Collectors.joining("/"));
     }
 }

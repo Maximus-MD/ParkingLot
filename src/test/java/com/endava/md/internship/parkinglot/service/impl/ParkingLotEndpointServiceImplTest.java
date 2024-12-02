@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -69,6 +70,7 @@ public class ParkingLotEndpointServiceImplTest {
         ParkingLotGeneralDetailsDto expectedDto = createParkingLotListDto(1L, "Endava Tower Parking Lot", "08:00 - 18:00", "MONDAY/TUESDAY", false, false);
         assertEquals(expectedDto, result.get(0));
     }
+
 
     @Test
     void getAllParkingLots_ReturnsNonStopOperatingDetails_WhenParkingLotOperatesNonStop() {

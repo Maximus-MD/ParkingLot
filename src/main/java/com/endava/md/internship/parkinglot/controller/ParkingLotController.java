@@ -1,5 +1,6 @@
 package com.endava.md.internship.parkinglot.controller;
 
+import com.endava.md.internship.parkinglot.dto.ParkingLotGeneralDetailsDto;
 import com.endava.md.internship.parkinglot.dto.ParkingLotRequestDto;
 import com.endava.md.internship.parkinglot.dto.ParkingLotResponseDto;
 import com.endava.md.internship.parkinglot.service.ParkingLotService;

@@ -160,7 +160,7 @@ public class ParkingLotServiceImpl implements ParkingLotService {
             return "";
         }
         return workingDays.stream()
-                .map(day -> day.getDayName().name().substring(0, 1))
+                .map(day -> day.getDayName().name())
                 .collect(Collectors.joining("/"));
     }
 }

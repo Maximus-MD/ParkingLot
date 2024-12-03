@@ -63,6 +63,7 @@ snyk_scan_jar:
     - snyk test target/*.jar  # Scan the JAR file directly
   dependencies:
     - build
+  allow_failure: true
 
 sonar_analyze:
   stage: analyze

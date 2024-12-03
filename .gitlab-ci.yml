@@ -2,8 +2,10 @@ stages:
   - build
   - test
   - analyze
-  - deploy
-  - docker
+  - artifact
+  - packing
+  - staging
+  - production
 
 variables:
   MAVEN_IMAGE: "maven:3.8.7-openjdk-18"
@@ -20,9 +22,6 @@ variables:
 cache:
   paths:
     - $MAVEN_CACHE_DIR
-
-include:
-  - local: '.gitlab-ci-script.yml'
 
 build:
   stage: build
@@ -65,8 +64,8 @@ sonar_analyze:
     - build
 
 deploy_nexus:
-  stage: deploy
-  image: curlimages/curl:latest
+  stage: artifact
+  image: curlimages/curl:8.11.0
   script:
     - echo "Parsing POM file..."
     - VERSION=$(grep "SNAPSHOT<\/version>" pom.xml | head -n 1 | sed 's/.*<version>\(.*\)<\/version>.*/\1/')
@@ -87,18 +86,87 @@ deploy_nexus:
   only:
     - master
 
-trigger_docker:
-  stage: docker
-  trigger:
-    project: tooling/docker-packing
-    branch: "java"
-    strategy: depend
-    forward:
-      pipeline_variables: true
-      yaml_variables: true
-  variables:
-    UPSTREAM_COMMIT_SHA: "$CI_COMMIT_SHORT_SHA"
-    VERSION: "$VERSION"
+kaniko_build_and_push:
+  stage: packing
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
   only:
     - master
+  script:
+    - |
+      if echo "$VERSION" | grep -iq "SNAPSHOT"; then
+        export REPO_TYPE="snapshots"
+      else
+        export REPO_TYPE="releases"
+      fi
+    - export NEXUS_AUTH=$(echo -n "${Nexus_REPO_USER}:${Nexus_REPO_PASS}" | base64)
+    - echo "{\"auths\":{\"$REPO_DOCKER_URL\":{\"auth\":\"$NEXUS_AUTH\"}}}" > /kaniko/.docker/config.json
+    - env
+    - |
+      /kaniko/executor \
+        --context $CI_PROJECT_DIR \
+        --dockerfile $CI_PROJECT_DIR/Dockerfile \
+        --destination ${REPO_DOCKER_URL}/${ARTIFACT_ID}:${VERSION}-${UPSTREAM_COMMIT_SHA} \
+        --destination ${REPO_DOCKER_URL}/${ARTIFACT_ID}:latest-${REPO_TYPE%?} \
+        --insecure \
+        --build-arg GROUP_ID=$GROUP_ID \
+        --build-arg ARTIFACT_ID=$ARTIFACT_ID \
+        --build-arg VERSION=$VERSION \
+        --build-arg Nexus_REPO_USER=$Nexus_REPO_USER \
+        --build-arg Nexus_REPO_PASS=$Nexus_REPO_PASS \
+        --build-arg Nexus_REPO_URL=$Nexus_REPO_URL \
+        --build-arg REPO_TYPE=$REPO_TYPE \
+        --build-arg CI_COMMIT_SHORT_SHA=$CI_COMMIT_SHORT_SHA
+        
 
+deploy_staging:
+  stage: staging
+  image: alpine:3.20.3
+  only:
+    - master
+  script:
+    - apk add --no-cache yq git  # Install tools (yq to modify YAML, git to commit changes)
+    - git clone https://oauth2:$CI_JOB_TOKEN@${FLUX_REPO}
+    - cd fluxcd
+
+    # Use yq to modify the HelmRelease manifest and update the image tag dynamically
+    - yq eval ".spec.values.image.tag = \"${VERSION}-${CI_COMMIT_SHORT_SHA}\"" -i clusters/endava-eks/parkinglot/staging/helmRelease.yaml
+    
+    # Optionally, you can also update other values, such as the repository tag or version.
+    # e.g., yq eval ".spec.chart.spec.version = \"${CI_COMMIT_REF_NAME}\"" -i parkinglot-api/HelmRelease.yaml
+
+    # Commit the changes
+    - git config --global user.email "andrei.rusnac@endava.com"
+    - git config --global user.name "GitLab CI"
+    - git add clusters/endava-eks/parkinglot/staging/helmRelease.yaml
+    - git commit -m "Update HelmRelease for new image version ${VERSION}-${CI_COMMIT_SHORT_SHA}"
+    - git push origin main  # Push the changes to the Git repository
+  environment:
+    name: staging
+
+deploy_production:
+  stage: production
+  image: alpine:3.20.3
+  only:
+    - master
+  script:
+    - apk add --no-cache yq git  # Install tools (yq to modify YAML, git to commit changes)
+    - git clone https://oauth2:$CI_JOB_TOKEN@${FLUX_REPO}
+    - cd fluxcd
+
+    # Use yq to modify the HelmRelease manifest and update the image tag dynamically
+    - yq eval ".spec.values.image.tag = \"${VERSION}-${CI_COMMIT_SHORT_SHA}\"" -i clusters/endava-eks/parkinglot/production/helmRelease.yaml
+    
+    # Optionally, you can also update other values, such as the repository tag or version.
+    # e.g., yq eval ".spec.chart.spec.version = \"${CI_COMMIT_REF_NAME}\"" -i parkinglot-api/HelmRelease.yaml
+
+    # Commit the changes
+    - git config --global user.email "andrei.rusnac@endava.com"
+    - git config --global user.name "GitLab CI"
+    - git add clusters/endava-eks/parkinglot/production/helmRelease.yaml
+    - git commit -m "Update HelmRelease for new image version ${VERSION}-${CI_COMMIT_SHORT_SHA}"
+    - git push origin main  # Push the changes to the Git repository
+  when: manual
+  environment:
+    name: production

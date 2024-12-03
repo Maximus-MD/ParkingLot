@@ -136,6 +136,13 @@ kaniko_build_and_push:
 trivy_image_scan_staging:
   stage: scanning
   image: ${TRIVY_IMAGE}
+  services:
+    - docker:24.0.5-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_TLS_VERIFY: 1
+    DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
   before_script:
     - echo "Authenticating to Nexus Docker registry"
     - mkdir -p ~/.docker
@@ -146,9 +153,9 @@ trivy_image_scan_staging:
     # update vulnerabilities db
     - time trivy image --download-db-only
     # Prints full report
-    - trivy image --no-progress --exit-code 0 --remote ${REPO_DOCKER_URL}/${ARTIFACT_ID}:${VERSION}-${CI_COMMIT_SHORT_SHA}
+    - trivy image --exit-code 0 ${REPO_DOCKER_URL}/${ARTIFACT_ID}:${VERSION}-${CI_COMMIT_SHORT_SHA}
     # Fail on critical vulnerabilities
-    - trivy image --no-progress --exit-code 1 --severity CRITICAL --remote ${REPO_DOCKER_URL}/${ARTIFACT_ID}:${VERSION}-${CI_COMMIT_SHORT_SHA}
+    - trivy image --exit-code 1 --severity CRITICAL ${REPO_DOCKER_URL}/${ARTIFACT_ID}:${VERSION}-${CI_COMMIT_SHORT_SHA}
   dependencies:
     - kaniko_build_and_push
   only:

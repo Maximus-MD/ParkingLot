@@ -191,10 +191,19 @@ dast_scan_staging:
   image:
     name: zaproxy/zap-stable:latest
     entrypoint: [""]
+  before_script:
+    - mkdir -p /zap/wrk
   script:
     - echo "Starting DAST scan on deployed staging app"
-    - zap-api-scan.py -I -t https://api-stg.parking.mddinternship.com -f openapi
+    - zap-full-scan.py -I -t https://api-stg.parking.mddinternship.com -r dast-report.html -J dast-report.json
     - echo "DAST scan completed. Report generated as dast-report.html"
+  artifacts:
+    paths:
+      - dast-report.html
+    reports:
+      dast:
+        - dast-report.json
+
   dependencies:
     - deploy_staging
   only:

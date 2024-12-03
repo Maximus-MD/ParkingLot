@@ -106,7 +106,7 @@ kaniko_build_and_push:
     - |
       /kaniko/executor \
         --context $CI_PROJECT_DIR \
-        --dockerfile $CI_PROJECT_DIR/Dockerfile \
+        --dockerfile $CI_PROJECT_DIR/docker/Dockerfile \
         --destination ${REPO_DOCKER_URL}/${ARTIFACT_ID}:${VERSION}-${UPSTREAM_COMMIT_SHA} \
         --destination ${REPO_DOCKER_URL}/${ARTIFACT_ID}:latest-${REPO_TYPE%?} \
         --insecure \

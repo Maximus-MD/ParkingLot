@@ -189,7 +189,7 @@ deploy_staging:
 dast_scan_staging:
   stage: staging
   image:
-    name: owasp/zap2docker-stable:latest
+    name: zaproxy/zap-stable:latest
     entrypoint: [""]
   script:
     - echo "Starting DAST scan on deployed staging app"
@@ -197,9 +197,6 @@ dast_scan_staging:
     - echo "DAST scan completed. Report generated as dast-report.html"
   dependencies:
     - deploy_staging
-  artifacts:
-    paths:
-      - dast-report.html
   only:
     - master
 

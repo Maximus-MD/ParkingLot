@@ -1,5 +1,5 @@
 # Stage 1: Builder
-FROM alpine:latest AS builder
+FROM alpine:3.20.3 AS builder
 
 # Declare build arguments
 ARG GROUP_ID
@@ -9,7 +9,7 @@ ARG Nexus_REPO_USER
 ARG Nexus_REPO_PASS
 ARG Nexus_REPO_URL
 ARG REPO_TYPE
-ARG UPSTREAM_COMMIT_SHA
+ARG CI_COMMIT_SHORT_SHA
 
 # Set environment variables (optional)
 ENV GROUP_ID=$GROUP_ID
@@ -19,7 +19,7 @@ ENV Nexus_REPO_USER=$Nexus_REPO_USER
 ENV Nexus_REPO_PASS=$Nexus_REPO_PASS
 ENV Nexus_REPO_URL=$Nexus_REPO_URL
 ENV REPO_TYPE=$REPO_TYPE
-ENV UPSTREAM_COMMIT_SHA=$UPSTREAM_COMMIT_SHA
+ENV CI_COMMIT_SHORT_SHA=$CI_COMMIT_SHORT_SHA
 
 # Use build arguments (optional)
 RUN echo "Building $GROUP_ID / $ARTIFACT_ID version $VERSION"
@@ -28,7 +28,7 @@ RUN echo "Building $GROUP_ID / $ARTIFACT_ID version $VERSION"
 RUN apk add --no-cache wget
 
 # Set environment variables
-ENV ARTIFACT_PATH=/repository/maven-${REPO_TYPE}/${GROUP_ID//.//}/${ARTIFACT_ID}/${ARTIFACT_ID}-${VERSION}-${UPSTREAM_COMMIT_SHA}.jar
+ENV ARTIFACT_PATH=/repository/maven-${REPO_TYPE}/${GROUP_ID//.//}/${ARTIFACT_ID}/${ARTIFACT_ID}-${VERSION}-${CI_COMMIT_SHORT_SHA}.jar
 
 # Download the artifact
 WORKDIR /workspace

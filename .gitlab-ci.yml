@@ -54,7 +54,7 @@ maven_test:
 
 snyk_scan_jar:
   stage: analyze
-  image: snyk/snyk-cli:latest
+  image: ${SNYK_IMAGE}
   script:
     - snyk test --all-projects --file=pom.xml  # Snyk scans for vulnerabilities in dependencies listed in the pom.xml
     - snyk test target/*.jar  # Scan the JAR file directly
@@ -164,6 +164,22 @@ deploy_staging:
     - git push origin main  # Push the changes to the Git repository
   environment:
     name: staging
+
+dast_scan_staging:
+  stage: staging
+  image: owasp/zap2docker-stable:latest
+  script:
+    - echo "Starting DAST scan on deployed staging app"
+    - kubectl run zap-scanner --rm -i --tty --image=owasp/zap2docker-stable:latest --restart=Never -- \
+        zap-baseline.py -t https://api-stg.parking.mddinternship.com/ -r /zap/wrk/dast-report.html
+    - echo "DAST scan completed. Report generated as dast-report.html"
+  dependencies:
+    - deploy_staging
+  artifacts:
+    paths:
+      - dast-report.html
+  only:
+    - master
 
 deploy_production:
   stage: production

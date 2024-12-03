@@ -4,6 +4,7 @@ stages:
   - analyze
   - artifact
   - packing
+  - scanning
   - staging
   - production
 
@@ -50,6 +51,15 @@ maven_test:
     reports:
       junit: target/surefire-reports/*.xml
     expire_in: 1 week
+
+snyk_scan_jar:
+  stage: analyze
+  image: snyk/snyk-cli:latest
+  script:
+    - snyk test --all-projects --file=pom.xml  # Snyk scans for vulnerabilities in dependencies listed in the pom.xml
+    - snyk test target/*.jar  # Scan the JAR file directly
+  dependencies:
+    - build
 
 sonar_analyze:
   stage: analyze
@@ -119,6 +129,16 @@ kaniko_build_and_push:
         --build-arg REPO_TYPE=$REPO_TYPE \
         --build-arg CI_COMMIT_SHORT_SHA=$CI_COMMIT_SHORT_SHA
         
+trivy_image_scan_staging:
+  stage: scanning
+  image: aquasec/trivy:latest
+  script:
+    - echo "Scanning Docker image for vulnerabilities before staging deployment"
+    - trivy image --no-progress --exit-code 1 ${REPO_DOCKER_URL}/${ARTIFACT_ID}:${VERSION}-${CI_COMMIT_SHORT_SHA}
+  dependencies:
+    - kaniko_build_and_push
+  only:
+    - master
 
 deploy_staging:
   stage: staging

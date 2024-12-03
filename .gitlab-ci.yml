@@ -56,6 +56,9 @@ snyk_scan_jar:
   stage: analyze
   image: ${SNYK_IMAGE}
   script:
+    - echo "Authenticating Snyk..."
+    - snyk auth $SNYK_TOKEN
+    - echo "Starting Snyk scan for Maven dependencies"
     - snyk test --file=pom.xml  # Snyk scans for vulnerabilities in dependencies listed in the pom.xml
     - snyk test target/*.jar  # Scan the JAR file directly
   dependencies:

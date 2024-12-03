@@ -56,7 +56,7 @@ snyk_scan_jar:
   stage: analyze
   image: ${SNYK_IMAGE}
   script:
-    - snyk test --all-projects --file=pom.xml  # Snyk scans for vulnerabilities in dependencies listed in the pom.xml
+    - snyk test --file=pom.xml  # Snyk scans for vulnerabilities in dependencies listed in the pom.xml
     - snyk test target/*.jar  # Scan the JAR file directly
   dependencies:
     - build

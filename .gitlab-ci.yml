@@ -199,10 +199,10 @@ dast_scan_staging:
     - echo "DAST scan completed. Report generated as dast-report.html"
   artifacts:
     paths:
-      - dast-report.html
+      - /zap/wrk/dast-report.html
     reports:
       dast:
-        - dast-report.json
+        - /zap/wrk/dast-report.json
 
   dependencies:
     - deploy_staging

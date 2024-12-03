@@ -188,11 +188,12 @@ deploy_staging:
 
 dast_scan_staging:
   stage: staging
-  image: owasp/zap2docker-stable:latest
+  image:
+    name: owasp/zap2docker-stable:latest
+    entrypoint: [""]
   script:
     - echo "Starting DAST scan on deployed staging app"
-    - kubectl run zap-scanner --rm -i --tty --image=owasp/zap2docker-stable:latest --restart=Never -- \
-        zap-baseline.py -t https://api-stg.parking.mddinternship.com/ -r /zap/wrk/dast-report.html
+    - zap-api-scan.py -I -t https://api-stg.parking.mddinternship.com -f openapi
     - echo "DAST scan completed. Report generated as dast-report.html"
   dependencies:
     - deploy_staging

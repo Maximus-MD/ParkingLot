@@ -135,10 +135,16 @@ kaniko_build_and_push:
         
 trivy_image_scan_staging:
   stage: scanning
-  image: aquasec/trivy:latest
+  image: ${TRIVY_IMAGE}
   script:
     - echo "Scanning Docker image for vulnerabilities before staging deployment"
-    - trivy image --no-progress --exit-code 1 ${REPO_DOCKER_URL}/${ARTIFACT_ID}:${VERSION}-${CI_COMMIT_SHORT_SHA}
+    - trivy --version
+    # update vulnerabilities db
+    - time trivy image --download-db-only
+    # Prints full report
+    - trivy image --no-progress --exit-code 0 ${REPO_DOCKER_URL}/${ARTIFACT_ID}:${VERSION}-${CI_COMMIT_SHORT_SHA}
+    # Fail on critical vulnerabilities
+    - trivy image --no-progress --exit-code 1 --severity CRITICAL ${REPO_DOCKER_URL}/${ARTIFACT_ID}:${VERSION}-${CI_COMMIT_SHORT_SHA}
   dependencies:
     - kaniko_build_and_push
   only:

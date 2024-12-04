@@ -21,10 +21,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class GlobalSecurityFilterConfig {
 
+    private static final String ROLE_ADMIN = "ROLE_ADMIN";
+
     private final JWTRequestFilter jwtRequestFilter;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
-
-    public static final String ROLE_ADMIN = "ROLE_ADMIN";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -34,6 +34,9 @@ public class GlobalSecurityFilterConfig {
                         .requestMatchers(HttpMethod.POST, "/register", "/login").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/restore-password").permitAll()
                         .requestMatchers(HttpMethod.GET, "/actuator/health", "/favicon.ico").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/parking-lots/create").hasAuthority(ROLE_ADMIN)
+                        .requestMatchers(HttpMethod.PATCH, "/parking-spots/change-type/{id}").hasAuthority(ROLE_ADMIN)
+                        .requestMatchers(HttpMethod.DELETE, "/parking-lots/delete/**").hasAuthority(ROLE_ADMIN)
                         .requestMatchers(HttpMethod.POST,"/parking-lots/create").hasAuthority(ROLE_ADMIN)
                         .requestMatchers(HttpMethod.DELETE,"/parking-lots/delete/**").hasAuthority(ROLE_ADMIN)
                         .requestMatchers(HttpMethod.POST, "/{parkingLotId}/users/{userId}").hasAuthority(ROLE_ADMIN)

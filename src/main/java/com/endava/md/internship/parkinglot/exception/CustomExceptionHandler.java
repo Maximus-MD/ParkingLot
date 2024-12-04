@@ -38,6 +38,12 @@ public class CustomExceptionHandler {
     @Value("${message.parking-not-found}")
     private int parkingLotNotFound;
 
+    @Value("${message.occupied-parking-spot}")
+    private int occupiedParkingSpot;
+
+    @Value("${message.parking-spot-not-found}")
+    private int parkingSpotNotFound;
+
     @Value("1030")
     private int userNotAssigned;
 
@@ -53,12 +59,14 @@ public class CustomExceptionHandler {
         Set<String> errors = new HashSet<>();
         exception.getBindingResult().getAllErrors().forEach(error -> errors.add(error.getDefaultMessage()));
         Set<Integer> resultErrors = errors.stream().map(Integer::parseInt).collect(Collectors.toSet());
+
         return ResponseFactory.createResponse(resultErrors);
     }
 
     @ExceptionHandler(CustomAuthException.class)
     public ResponseEntity<ResponseDTO> handleCustomAuthException(final CustomAuthException authException) {
         log.error(authException.getMessage());
+
         return switch (authException.getAuthErrorType()) {
             case JWT_TOKEN_GENERATION_ERROR -> ResponseFactory.createResponse(Set.of(jwtTokenGenerationError));
 
@@ -73,12 +81,14 @@ public class CustomExceptionHandler {
     @ExceptionHandler(ParkingLotException.class)
     public ResponseEntity<ResponseGenericErrorDTO> handleParkingLotException(final ParkingLotException exception) {
         log.error(exception.getMessage());
+
         return ResponseFactory.createResponse(parkingLotNotFound);
     }
 
     @ExceptionHandler(RegistrationException.class)
     public ResponseEntity<ResponseDTO> handleRegistrationException(RegistrationException exception) {
         log.error("Registration error: {}", exception.getMessage(), exception);
+
         return ResponseFactory.createResponse(Set.of(exception.getErrorCode()));
     }
 
@@ -92,16 +102,22 @@ public class CustomExceptionHandler {
         return ResponseFactory.createResponse(serverError);
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ResponseGenericErrorDTO> handleUserNotFoundException(UserNotFoundException exception) {
-        log.error("User not found: {}", exception.getMessage());
-        return ResponseFactory.createResponse(userNotFound);
+    @ExceptionHandler(OccupiedParkingSpotException.class)
+    public ResponseEntity<ResponseDTO> handleOccupiedParkingSpotException(
+            OccupiedParkingSpotException occupiedParkingSpotException
+    ) {
+        log.error(occupiedParkingSpotException.getMessage());
+
+        return ResponseFactory.createResponse(Set.of(occupiedParkingSpot));
     }
 
-    @ExceptionHandler(ParkingLotNotFoundException.class)
-    public ResponseEntity<ResponseGenericErrorDTO> handleParkingLotNotFoundException(ParkingLotNotFoundException exception) {
-        log.error("Parking lot not found: {}", exception.getMessage());
-        return ResponseFactory.createResponse(parkingLotNotFound);
+    @ExceptionHandler(ParkingSpotNotFoundException.class)
+    public ResponseEntity<ResponseDTO> handleParkingSpotNotFoundException(
+            ParkingSpotNotFoundException parkingSpotNotFoundException
+    ) {
+        log.error(parkingSpotNotFoundException.getMessage());
+
+        return ResponseFactory.createResponse(Set.of(parkingSpotNotFound));
     }
 
     @ExceptionHandler(UserAlreadyAssignedException.class)
@@ -120,5 +136,11 @@ public class CustomExceptionHandler {
     public ResponseEntity<ResponseGenericErrorDTO> handleEmailSendingException(EmailSendException exception) {
         log.error("Email sending error: {}", exception.getMessage());
         return ResponseFactory.createResponse(emailSendingError);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ResponseGenericErrorDTO> handleUserNotFoundException(UserNotFoundException exception) {
+        log.error("User not found: {}", exception.getMessage());
+        return ResponseFactory.createResponse(userNotFound);
     }
 }

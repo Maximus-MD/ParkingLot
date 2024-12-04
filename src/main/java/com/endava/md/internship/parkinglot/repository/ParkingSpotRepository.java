@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface ParkingSpotRepository extends JpaRepository<ParkingSpot, Integer> {
     Optional<ParkingSpot> findByType(ParkingSpotType type);
     Optional<ParkingSpot> findByOccupied(boolean occupied);
+    Optional<ParkingSpot> findBySpotId(Long id);
 }

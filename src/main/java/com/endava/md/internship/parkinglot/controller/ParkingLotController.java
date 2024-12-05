@@ -31,10 +31,9 @@ public class ParkingLotController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/delete/{name}")
-    public ResponseEntity<ParkingLotResponseDto> removeParkingLot(@PathVariable String name) {
-        ParkingLotResponseDto response = parkingService.deleteParkingLot(name);
-
+    @PostMapping("/{parkingLotId}/users/{userId}")
+    public ResponseEntity<ParkingLotResponseDto> addUserToParkingLot(@PathVariable Long parkingLotId, @PathVariable Long userId) {
+        ParkingLotResponseDto response = parkingService.addUserToParkingLot(userId, parkingLotId);
         return ResponseEntity.ok(response);
     }
 
@@ -44,9 +43,10 @@ public class ParkingLotController {
         return ResponseEntity.ok(parkingLots);
     }
 
-    @PostMapping("/{parkingLotId}/users/{userId}")
-    public ResponseEntity<ParkingLotResponseDto> addUserToParkingLot(@PathVariable Long parkingLotId, @PathVariable Long userId) {
-        ParkingLotResponseDto response = parkingService.addUserToParkingLot(userId, parkingLotId);
+    @DeleteMapping("/delete/{name}")
+    public ResponseEntity<ParkingLotResponseDto> removeParkingLot(@PathVariable String name) {
+        ParkingLotResponseDto response = parkingService.deleteParkingLot(name);
+
         return ResponseEntity.ok(response);
     }
 

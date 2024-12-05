@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 @RestControllerAdvice
 @Slf4j
 @PropertySource("classpath:validation-errors.properties")

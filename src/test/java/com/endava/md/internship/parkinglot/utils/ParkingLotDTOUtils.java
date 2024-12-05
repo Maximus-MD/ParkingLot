@@ -5,6 +5,7 @@ import com.endava.md.internship.parkinglot.dto.ParkingLotResponseDto;
 import com.endava.md.internship.parkinglot.dto.WorkingDayDto;
 
 import java.sql.Time;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -110,4 +111,31 @@ public class ParkingLotDTOUtils {
                 emptySet()
         );
     }
+
+    public static ParkingLotRequestDto getPreparedParkingLotRequestDtoWithOperatesNonStopEnabled() {
+        return new ParkingLotRequestDto(
+                "Kaufland",
+                "str. Mircea cel Batran 20",
+                null,
+                null,
+                true,
+                false,
+                Collections.emptyList(),
+                Map.of("A", 10)
+        );
+    }
+
+    public static ParkingLotRequestDto getPreparedParkingLotRequestDtoWithOperatesNonStopDisabled() {
+        return new ParkingLotRequestDto(
+                "Kaufland",
+                "str. Mircea cel Batran 20",
+                null,
+                null,
+                false,
+                false,
+                Collections.emptyList(),
+                Map.of("A", 10)
+        );
+    }
+
 }

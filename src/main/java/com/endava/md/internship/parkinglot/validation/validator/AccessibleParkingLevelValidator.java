@@ -16,7 +16,6 @@ public class AccessibleParkingLevelValidator implements ConstraintValidator<Acce
 
     @Override
     public boolean isValid(Map<String, Integer> parkingLevels, ConstraintValidatorContext constraintValidatorContext) {
-        return new HashSet<>(ACCESSIBLE_PARKING_LEVELS).containsAll(parkingLevels.keySet())
-                && parkingLevels.values().stream().allMatch(value -> value >= 1 && value <= 150);
+        return new HashSet<>(ACCESSIBLE_PARKING_LEVELS).containsAll(parkingLevels.keySet());
     }
 }

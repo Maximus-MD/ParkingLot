@@ -1,6 +1,6 @@
 package com.endava.md.internship.parkinglot.validation.annotation;
 
-import com.endava.md.internship.parkinglot.validation.validator.NotEmptyWorkingDaysValidator;
+import com.endava.md.internship.parkinglot.validation.validator.EmptyWorkingDaysValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -9,10 +9,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = NotEmptyWorkingDaysValidator.class)
-public @interface NotEmptyWorkingDays {
+@Constraint(validatedBy = {EmptyWorkingDaysValidator.class})
+public @interface EmptyWorkingDays {
     String message() default "{message.empty-working-days}";
 
     Class<?>[] groups() default {};

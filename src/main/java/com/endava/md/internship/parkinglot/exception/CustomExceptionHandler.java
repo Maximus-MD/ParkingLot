@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
 @RestControllerAdvice
 @Slf4j
 @PropertySource("classpath:validation-errors.properties")
@@ -44,13 +45,13 @@ public class CustomExceptionHandler {
     @Value("${message.parking-spot-not-found}")
     private int parkingSpotNotFound;
 
-    @Value("1030")
+    @Value("${message.user-not-assigned}")
     private int userNotAssigned;
 
-    @Value("1031")
+    @Value("${message.user-already-assigned}")
     private int userAlreadyAssigned;
 
-    @Value("3003")
+    @Value("${message.send-email-error}")
     private int emailSendingError;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

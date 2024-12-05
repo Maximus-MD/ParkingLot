@@ -69,7 +69,7 @@ public class ParkingLotUtils {
         return parkingSpots;
     }
 
-        public static List<WorkingDay> getPreparedWorkingDays(){
+    public static List<WorkingDay> getPreparedWorkingDays() {
         WorkingDay workingDay1 = new WorkingDay();
 
         workingDay1.setWorkingDayId(1L);

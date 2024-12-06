@@ -38,6 +38,15 @@ public class CustomExceptionHandler {
     @Value("${message.parking-not-found}")
     private int parkingLotNotFound;
 
+    @Value("1030")
+    private int userNotAssigned;
+
+    @Value("1031")
+    private int userAlreadyAssigned;
+
+    @Value("3003")
+    private int emailSendingError;
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseDTO> handleValidationExceptions(MethodArgumentNotValidException exception) {
         log.error("Validation exception", exception);
@@ -81,5 +90,35 @@ public class CustomExceptionHandler {
                 traceElement.getLineNumber(), throwable.getMessage(), throwable);
 
         return ResponseFactory.createResponse(serverError);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ResponseGenericErrorDTO> handleUserNotFoundException(UserNotFoundException exception) {
+        log.error("User not found: {}", exception.getMessage());
+        return ResponseFactory.createResponse(userNotFound);
+    }
+
+    @ExceptionHandler(ParkingLotNotFoundException.class)
+    public ResponseEntity<ResponseGenericErrorDTO> handleParkingLotNotFoundException(ParkingLotNotFoundException exception) {
+        log.error("Parking lot not found: {}", exception.getMessage());
+        return ResponseFactory.createResponse(parkingLotNotFound);
+    }
+
+    @ExceptionHandler(UserAlreadyAssignedException.class)
+    public ResponseEntity<ResponseGenericErrorDTO> handleUserAlreadyAssignedException(UserAlreadyAssignedException exception) {
+        log.error("User already assigned: {}", exception.getMessage());
+        return ResponseFactory.createResponse(userAlreadyAssigned);
+    }
+
+    @ExceptionHandler(UserNotAssignedException.class)
+    public ResponseEntity<ResponseGenericErrorDTO> handleUserNotAssignedException(UserNotAssignedException exception) {
+        log.error("User not assigned: {}", exception.getMessage());
+        return ResponseFactory.createResponse(userNotAssigned);
+    }
+
+    @ExceptionHandler(EmailSendException.class)
+    public ResponseEntity<ResponseGenericErrorDTO> handleEmailSendingException(EmailSendException exception) {
+        log.error("Email sending error: {}", exception.getMessage());
+        return ResponseFactory.createResponse(emailSendingError);
     }
 }

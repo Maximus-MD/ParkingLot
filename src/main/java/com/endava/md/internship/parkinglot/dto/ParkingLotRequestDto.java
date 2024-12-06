@@ -8,11 +8,13 @@ import com.endava.md.internship.parkinglot.validation.annotation.UniqueParkingAd
 import com.endava.md.internship.parkinglot.validation.annotation.UniqueParkingName;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 
 import java.sql.Time;
 import java.util.List;
 import java.util.Map;
 
+@Builder
 @OperatesNonStopEnabled
 public record ParkingLotRequestDto(
 

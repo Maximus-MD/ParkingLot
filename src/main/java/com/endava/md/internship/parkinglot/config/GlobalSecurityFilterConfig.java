@@ -15,7 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 @Slf4j
 @RequiredArgsConstructor
 @Configuration
@@ -23,20 +22,22 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class GlobalSecurityFilterConfig {
 
     private final JWTRequestFilter jwtRequestFilter;
-
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(
-                                HttpMethod.POST, "/register", "/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/register", "/login").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/restore-password").permitAll()
                         .requestMatchers(HttpMethod.GET, "/actuator/health", "/favicon.ico").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/parking-lots/create").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.DELETE,"/parking-lots/delete/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/parking-lots/create").hasAuthority(ROLE_ADMIN)
+                        .requestMatchers(HttpMethod.DELETE,"/parking-lots/delete/**").hasAuthority(ROLE_ADMIN)
+                        .requestMatchers(HttpMethod.POST, "/{parkingLotId}/users/{userId}").hasAuthority(ROLE_ADMIN)
+                        .requestMatchers(HttpMethod.DELETE, "/{parkingLotId}/users/{userId}").hasAuthority(ROLE_ADMIN)
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(handler -> handler

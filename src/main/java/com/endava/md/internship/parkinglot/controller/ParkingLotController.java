@@ -43,4 +43,16 @@ public class ParkingLotController {
         List<ParkingLotGeneralDetailsDto> parkingLots = parkingService.getAllParkingLots();
         return ResponseEntity.ok(parkingLots);
     }
+
+    @PostMapping("/{parkingLotId}/users/{userId}")
+    public ResponseEntity<ParkingLotResponseDto> addUserToParkingLot(@PathVariable Long parkingLotId, @PathVariable Long userId) {
+        ParkingLotResponseDto response = parkingService.addUserToParkingLot(userId, parkingLotId);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{parkingLotId}/users/{userId}")
+    public ResponseEntity<ParkingLotResponseDto> removeUserFromParkingLot(@PathVariable Long parkingLotId, @PathVariable Long userId) {
+        ParkingLotResponseDto response = parkingService.removeUserFromParkingLot(userId, parkingLotId);
+        return ResponseEntity.ok(response);
+    }
 }

@@ -60,10 +60,10 @@ snyk_scan_jar:
     - snyk auth $SNYK_TOKEN
     - echo "Starting Snyk scan for Maven dependencies"
     - snyk test --file=pom.xml  # Snyk scans for vulnerabilities in dependencies listed in the pom.xml
-    - snyk test target/*.jar  # Scan the JAR file directly
+    - snyk test --file=target/*.jar  # Scan the JAR file directly
   dependencies:
     - build
-  allow_failure: true
+  allow_failure: $SNYK_JOB
 
 sonar_analyze:
   stage: analyze

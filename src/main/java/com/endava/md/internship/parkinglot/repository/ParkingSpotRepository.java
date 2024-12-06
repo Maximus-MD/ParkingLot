@@ -2,7 +2,6 @@ package com.endava.md.internship.parkinglot.repository;
 
 import com.endava.md.internship.parkinglot.model.ParkingLevel;
 import com.endava.md.internship.parkinglot.model.ParkingSpot;
-import com.endava.md.internship.parkinglot.model.ParkingSpotType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -18,9 +17,8 @@ public interface ParkingSpotRepository extends JpaRepository<ParkingSpot, Intege
             "WHERE ps.name = :name AND lot.name = :parkingName")
     Optional<ParkingSpot> findByNameAndParkingName(String name, String parkingName);
 
-    Optional<ParkingSpot> findByType(ParkingSpotType type);
+    Optional<ParkingSpot> findByUser_UserId(Long userId);
 
-    Optional<ParkingSpot> findByOccupied(boolean occupied);
     Optional<ParkingSpot> findBySpotId(Long id);
     int countByParkingLevelAndOccupied(ParkingLevel parkingLevel, boolean occupied);
 }

@@ -81,4 +81,16 @@ public class ParkingLotUtils {
 
         return workingDays;
     }
+
+    public static ParkingSpot getOneParkingSpot(){
+        ParkingSpot parkingSpot = new ParkingSpot();
+
+        parkingSpot.setSpotId(1L);
+        parkingSpot.setName("A-001");
+        parkingSpot.setType(REGULAR);
+        parkingSpot.setOccupied(false);
+        parkingSpot.setParkingLevel(preparedParkingLevel);
+
+        return parkingSpot;
+    }
 }

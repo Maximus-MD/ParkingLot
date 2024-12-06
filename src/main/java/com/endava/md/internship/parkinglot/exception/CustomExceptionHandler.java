@@ -53,6 +53,9 @@ public class CustomExceptionHandler {
     @Value("${message.send-email-error}")
     private int emailSendingError;
 
+    @Value("${message.user-has-parking-spot}")
+    private int userHasParkingSpot;
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseDTO> handleValidationExceptions(MethodArgumentNotValidException exception) {
         log.error("Validation exception", exception);
@@ -78,13 +81,6 @@ public class CustomExceptionHandler {
         };
     }
 
-    @ExceptionHandler(ParkingLotException.class)
-    public ResponseEntity<ResponseGenericErrorDTO> handleParkingLotException(final ParkingLotException exception) {
-        log.error(exception.getMessage());
-
-        return ResponseFactory.createResponse(parkingLotNotFound);
-    }
-
     @ExceptionHandler(RegistrationException.class)
     public ResponseEntity<ResponseDTO> handleRegistrationException(RegistrationException exception) {
         log.error("Registration error: {}", exception.getMessage(), exception);
@@ -92,14 +88,17 @@ public class CustomExceptionHandler {
         return ResponseFactory.createResponse(Set.of(exception.getErrorCode()));
     }
 
-    @ExceptionHandler(Throwable.class)
-    public ResponseEntity<ResponseGenericErrorDTO> handleGenericError(Throwable throwable) {
-        StackTraceElement traceElement = throwable.getStackTrace()[0];
-        log.error("Generic error in class: {}, method: {}, line: {}, the error: {}",
-                traceElement.getClassName(), traceElement.getMethodName(),
-                traceElement.getLineNumber(), throwable.getMessage(), throwable);
+    @ExceptionHandler(ParkingLotException.class)
+    public ResponseEntity<ResponseGenericErrorDTO> handleParkingLotException(final ParkingLotException exception) {
+        log.error(exception.getMessage());
 
-        return ResponseFactory.createResponse(serverError);
+        return ResponseFactory.createResponse(parkingLotNotFound);
+    }
+
+    @ExceptionHandler(UserAlreadyHasParkingSpotException.class)
+    public ResponseEntity<ResponseGenericErrorDTO> handleUserAlreadyHasParkingSpotExceptionException(final UserAlreadyHasParkingSpotException exception) {
+        log.error(exception.getMessage());
+        return ResponseFactory.createResponse(userHasParkingSpot);
     }
 
     @ExceptionHandler(OccupiedParkingSpotException.class)
@@ -142,5 +141,15 @@ public class CustomExceptionHandler {
     public ResponseEntity<ResponseGenericErrorDTO> handleUserNotFoundException(UserNotFoundException exception) {
         log.error("User not found: {}", exception.getMessage());
         return ResponseFactory.createResponse(userNotFound);
+    }
+
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<ResponseGenericErrorDTO> handleGenericError(Throwable throwable) {
+        StackTraceElement traceElement = throwable.getStackTrace()[0];
+        log.error("Generic error in class: {}, method: {}, line: {}, the error: {}",
+                traceElement.getClassName(), traceElement.getMethodName(),
+                traceElement.getLineNumber(), throwable.getMessage(), throwable);
+
+        return ResponseFactory.createResponse(serverError);
     }
 }

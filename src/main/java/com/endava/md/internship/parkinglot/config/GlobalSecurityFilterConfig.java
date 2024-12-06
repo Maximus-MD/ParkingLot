@@ -38,10 +38,10 @@ public class GlobalSecurityFilterConfig {
                         .requestMatchers(HttpMethod.POST, "/register", "/login").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/restore-password").permitAll()
                         .requestMatchers(HttpMethod.GET, "/actuator/health", "/favicon.ico").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/parking-spots/reserve-spot").authenticated()
                         .requestMatchers(HttpMethod.POST, "/parking-lots/create","/{parkingLotId}/users/{userId}").hasAuthority(ROLE_ADMIN)
                         .requestMatchers(HttpMethod.PATCH, "/parking-spots/change-type/{id}").hasAuthority(ROLE_ADMIN)
                         .requestMatchers(HttpMethod.DELETE, "/parking-lots/delete/**","/{parkingLotId}/users/{userId}").hasAuthority(ROLE_ADMIN)
-                        .requestMatchers(HttpMethod.PATCH, "/reserve-spot").hasAuthority(ROLE_REGULAR)
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(handler -> handler

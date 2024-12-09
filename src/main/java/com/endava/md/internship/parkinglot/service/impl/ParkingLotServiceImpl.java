@@ -4,16 +4,30 @@ import com.endava.md.internship.parkinglot.dto.ParkingLotGeneralDetailsDto;
 import com.endava.md.internship.parkinglot.dto.ParkingLotRequestDto;
 import com.endava.md.internship.parkinglot.dto.ParkingLotResponseDto;
 import com.endava.md.internship.parkinglot.dto.WorkingDayDto;
+import com.endava.md.internship.parkinglot.exception.EmailSendException;
 import com.endava.md.internship.parkinglot.exception.ParkingLotException;
+import com.endava.md.internship.parkinglot.exception.ParkingLotNotFoundException;
+import com.endava.md.internship.parkinglot.exception.UserAlreadyAssignedException;
+import com.endava.md.internship.parkinglot.exception.UserNotAssignedException;
+import com.endava.md.internship.parkinglot.exception.UserNotFoundException;
 import com.endava.md.internship.parkinglot.model.ParkingLevel;
 import com.endava.md.internship.parkinglot.model.ParkingLot;
+import com.endava.md.internship.parkinglot.model.ParkingLotUser;
+import com.endava.md.internship.parkinglot.model.ParkingLotUserId;
 import com.endava.md.internship.parkinglot.model.ParkingSpot;
+import com.endava.md.internship.parkinglot.model.User;
 import com.endava.md.internship.parkinglot.model.WorkingDay;
 import com.endava.md.internship.parkinglot.repository.ParkingLevelRepository;
 import com.endava.md.internship.parkinglot.repository.ParkingLotRepository;
+import com.endava.md.internship.parkinglot.repository.ParkingLotUserRepository;
+import com.endava.md.internship.parkinglot.repository.UserRepository;
 import com.endava.md.internship.parkinglot.repository.WorkingDayRepository;
+import com.endava.md.internship.parkinglot.service.EmailSenderService;
 import com.endava.md.internship.parkinglot.service.ParkingLotService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,11 +43,19 @@ import static com.endava.md.internship.parkinglot.model.ParkingSpotType.REGULAR;
 @RequiredArgsConstructor
 public class ParkingLotServiceImpl implements ParkingLotService {
 
+    private static final Logger log = LoggerFactory.getLogger(ParkingLotServiceImpl.class);
+
     private final ParkingLotRepository parkingLotRepository;
 
     private final ParkingLevelRepository parkingLevelRepository;
 
     private final WorkingDayRepository workingDayRepository;
+
+    private final UserRepository userRepository;
+
+    private final ParkingLotUserRepository parkingLotUserRepository;
+
+    private final EmailSenderService emailSenderService;
 
     @Override
     @Transactional
@@ -162,5 +184,71 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         return workingDays.stream()
                 .map(day -> day.getDayName().name())
                 .collect(Collectors.joining("/"));
+    }
+
+    @Transactional
+    @Override
+    public ParkingLotResponseDto addUserToParkingLot(Long userId, Long parkingLotId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
+        ParkingLot parkingLot = parkingLotRepository.findById(parkingLotId)
+                .orElseThrow(() -> new ParkingLotNotFoundException("Parking lot not found."));
+
+        ParkingLotUserId parkingLotUserId = new ParkingLotUserId(userId, parkingLotId);
+        if (parkingLotUserRepository.existsById(parkingLotUserId)) {
+            throw new UserAlreadyAssignedException("User is already added to this parking lot.");
+        }
+
+        ParkingLotUser parkingLotUser = createAndSaveParkingLotUser(parkingLotUserId, user, parkingLot);
+        log.info("User assigned to parking lot: {}", parkingLotUser);
+
+        String subject = "You have been added to Parking Lot";
+        String message = "You have been added to " + parkingLot.getName();
+        try {
+            emailSenderService.sendEmail(user.getEmail(), subject, message);
+        } catch (MessagingException e) {
+            throw new EmailSendException("Failed to send email.");
+        }
+
+        return ParkingLotResponseDto.builder()
+                .success(true)
+                .error(Collections.emptySet())
+                .build();
+    }
+
+    private ParkingLotUser createAndSaveParkingLotUser(ParkingLotUserId parkingLotUserId, User user, ParkingLot parkingLot) {
+        ParkingLotUser parkingLotUser = new ParkingLotUser();
+        parkingLotUser.setId(parkingLotUserId);
+        parkingLotUser.setUser(user);
+        parkingLotUser.setParkingLot(parkingLot);
+        return parkingLotUserRepository.save(parkingLotUser);
+    }
+
+    @Transactional
+    @Override
+    public ParkingLotResponseDto removeUserFromParkingLot(Long userId, Long parkingLotId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
+        ParkingLot parkingLot = parkingLotRepository.findById(parkingLotId)
+                .orElseThrow(() -> new ParkingLotNotFoundException("Parking lot not found."));
+
+        ParkingLotUserId parkingLotUserId = new ParkingLotUserId(userId, parkingLotId);
+        ParkingLotUser parkingLotUser = parkingLotUserRepository.findById(parkingLotUserId)
+                .orElseThrow(() -> new UserNotAssignedException("User is not assigned to this parking lot."));
+
+        parkingLotUserRepository.delete(parkingLotUser);
+
+        String subject = "You have been removed from Parking Lot";
+        String message = "You have been removed from " + parkingLot.getName();
+        try {
+            emailSenderService.sendEmail(user.getEmail(), subject, message);
+        } catch (MessagingException e) {
+            throw new EmailSendException("Failed to send email.");
+        }
+
+        return ParkingLotResponseDto.builder()
+                .success(true)
+                .error(Collections.emptySet())
+                .build();
     }
 }

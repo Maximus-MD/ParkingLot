@@ -10,7 +10,9 @@ import com.endava.md.internship.parkinglot.service.ParkingLotService;
 import com.endava.md.internship.parkinglot.utils.ParkingLotDTOUtils;
 import com.endava.md.internship.parkinglot.validation.validator.UniqueParkingAddressValidator;
 import com.endava.md.internship.parkinglot.validation.validator.UniqueParkingNameValidator;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,7 +25,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,6 +37,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @WebMvcTest(controllers = ParkingLotController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -61,6 +67,11 @@ class ParkingLotControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    private static final int PARKING_NOT_FOUND_CODE = 1013;
+    private static final int USER_NOT_ASSIGNED_CODE = 1030;
+    private static final int USER_ALREADY_ASSIGNED_CODE = 1031;
+    private static final int USER_NOT_FOUND_CODE = 4033;
 
     @Test
     void shouldReturnOkStatusWithResponse_WhenParkingLotCreationIsSuccessful() throws Exception {
@@ -147,5 +158,104 @@ class ParkingLotControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    private ParkingLotResponseDto successResponse() {
+        return ParkingLotResponseDto.builder()
+                .success(true)
+                .error(Collections.emptySet())
+                .build();
+    }
+
+    private ParkingLotResponseDto errorResponse(int code) {
+        return ParkingLotResponseDto.builder()
+                .success(false)
+                .error(Set.of(code))
+                .build();
+    }
+
+    @Test
+    void getAllParkingLots_EmptyList() throws Exception {
+        when(parkingLotService.getAllParkingLots()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/parking-lots"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    void removeParkingLot_Success() throws Exception {
+        when(parkingLotService.deleteParkingLot("MyParking")).thenReturn(successResponse());
+
+        mockMvc.perform(delete("/parking-lots/delete/MyParking"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.error").isEmpty());
+    }
+
+    @Test
+    void removeParkingLot_Error() throws Exception {
+        when(parkingLotService.deleteParkingLot("NonExistent"))
+                .thenReturn(errorResponse(PARKING_NOT_FOUND_CODE));
+
+        mockMvc.perform(delete("/parking-lots/delete/NonExistent"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error[0]").value(PARKING_NOT_FOUND_CODE));
+    }
+
+    @Test
+    void addUserToParkingLot_Success() throws Exception {
+        when(parkingLotService.addUserToParkingLot(100L, 10L)).thenReturn(successResponse());
+
+        mockMvc.perform(post("/parking-lots/10/users/100"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.error").isEmpty());
+    }
+
+    @Test
+    void addUserToParkingLot_UserNotFound() throws Exception {
+        when(parkingLotService.addUserToParkingLot(200L, 20L))
+                .thenReturn(errorResponse(USER_NOT_FOUND_CODE));
+
+        mockMvc.perform(post("/parking-lots/20/users/200"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error[0]").value(USER_NOT_FOUND_CODE));
+    }
+
+    @Test
+    void addUserToParkingLot_UserAlreadyAssigned() throws Exception {
+        when(parkingLotService.addUserToParkingLot(300L, 30L))
+                .thenReturn(errorResponse(USER_ALREADY_ASSIGNED_CODE));
+
+        mockMvc.perform(post("/parking-lots/30/users/300"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error[0]").value(USER_ALREADY_ASSIGNED_CODE));
+    }
+
+    @Test
+    void removeUserFromParkingLot_Success() throws Exception {
+        when(parkingLotService.removeUserFromParkingLot(400L, 40L)).thenReturn(successResponse());
+
+        mockMvc.perform(delete("/parking-lots/40/users/400"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.error").isEmpty());
+    }
+
+    @Test
+    void removeUserFromParkingLot_UserNotAssigned() throws Exception {
+        when(parkingLotService.removeUserFromParkingLot(500L, 50L))
+                .thenReturn(errorResponse(USER_NOT_ASSIGNED_CODE));
+
+        mockMvc.perform(delete("/parking-lots/50/users/500"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error[0]").value(USER_NOT_ASSIGNED_CODE));
     }
 }

@@ -20,6 +20,7 @@ import com.endava.md.internship.parkinglot.model.WorkingDay;
 import com.endava.md.internship.parkinglot.repository.ParkingLevelRepository;
 import com.endava.md.internship.parkinglot.repository.ParkingLotRepository;
 import com.endava.md.internship.parkinglot.repository.ParkingLotUserRepository;
+import com.endava.md.internship.parkinglot.repository.ParkingSpotRepository;
 import com.endava.md.internship.parkinglot.repository.UserRepository;
 import com.endava.md.internship.parkinglot.repository.WorkingDayRepository;
 import com.endava.md.internship.parkinglot.service.EmailSenderService;
@@ -30,12 +31,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 
 import static com.endava.md.internship.parkinglot.model.ParkingSpotType.REGULAR;
 
@@ -56,6 +60,8 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     private final ParkingLotUserRepository parkingLotUserRepository;
 
     private final EmailSenderService emailSenderService;
+
+    private final ParkingSpotRepository parkingSpotRepository;
 
     @Override
     @Transactional
@@ -152,20 +158,25 @@ public class ParkingLotServiceImpl implements ParkingLotService {
 
     @Override
     public List<ParkingLotGeneralDetailsDto> getAllParkingLots() {
-        List<ParkingLot> parkingLots = parkingLotRepository.findAll();
-        return parkingLots.stream()
+        return parkingLotRepository.findAll().stream()
                 .map(this::convertToParkingLotGeneralDetailsDto)
                 .toList();
     }
 
     private ParkingLotGeneralDetailsDto convertToParkingLotGeneralDetailsDto(ParkingLot parkingLot) {
         String operatingHours = "";
-        String operatingDays = "";
+        List<String> operatingDays = Collections.emptyList();
 
-        if (!parkingLot.isTemporaryClosed() && !parkingLot.isOperatesNonStop()) {
+        if (formatOperatingHours(parkingLot)) {
             operatingHours = String.format("%tR - %tR", parkingLot.getStartTime(), parkingLot.getEndTime());
             operatingDays = formatOperatingDays(parkingLot.getWorkingDays());
         }
+
+        Pair<Integer, Integer> spotsInfo = calculateSpots(parkingLot);
+        int totalSpots = spotsInfo.getLeft();
+        int occupiedSpots = spotsInfo.getRight();
+
+        double loadPercentage = totalSpots > 0 ? (occupiedSpots * 100.0) / totalSpots : 0.0;
 
         return new ParkingLotGeneralDetailsDto(
                 parkingLot.getParkingLotId(),
@@ -173,17 +184,45 @@ public class ParkingLotServiceImpl implements ParkingLotService {
                 operatingHours,
                 operatingDays,
                 parkingLot.isTemporaryClosed(),
-                parkingLot.isOperatesNonStop()
+                parkingLot.isOperatesNonStop(),
+                totalSpots,
+                totalSpots - occupiedSpots,
+                loadPercentage
         );
     }
 
-    private String formatOperatingDays(List<WorkingDay> workingDays) {
+    private boolean formatOperatingHours(ParkingLot parkingLot) {
+        return !parkingLot.isTemporaryClosed() && !parkingLot.isOperatesNonStop();
+    }
+
+    private Pair<Integer, Integer> calculateSpots(ParkingLot parkingLot) {
+        return Optional.ofNullable(parkingLot.getParkingLevels())
+                .map(this::calculateSpotsCount)
+                .orElseGet(() -> new ImmutablePair<>(0, 0));
+    }
+
+    private Pair<Integer, Integer> calculateSpotsCount(List<ParkingLevel> levels) {
+        int totalSpotsCounter = levels.stream()
+                .flatMap(level -> Optional.ofNullable(level.getParkingSpots())
+                        .map(List::stream)
+                        .orElseGet(Stream::empty))
+                .mapToInt(s -> 1)
+                .sum();
+
+        int occupiedSpotsCounter = levels.stream()
+                .mapToInt(level -> parkingSpotRepository.countByParkingLevelAndOccupied(level, true))
+                .sum();
+
+        return new ImmutablePair<>(totalSpotsCounter, occupiedSpotsCounter);
+    }
+
+    private List<String> formatOperatingDays(List<WorkingDay> workingDays) {
         if (workingDays == null || workingDays.isEmpty()) {
-            return "";
+            return Collections.emptyList();
         }
         return workingDays.stream()
                 .map(day -> day.getDayName().name())
-                .collect(Collectors.joining("/"));
+                .collect(Collectors.toList());
     }
 
     @Transactional

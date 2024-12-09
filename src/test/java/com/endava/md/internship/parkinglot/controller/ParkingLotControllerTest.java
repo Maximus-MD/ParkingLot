@@ -111,20 +111,23 @@ class ParkingLotControllerTest {
             long id,
             String name,
             String operatingHours,
-            String operatingDays,
+            List<String> operatingDays,
             boolean isTemporaryClosed,
-            boolean operatesNonStop
+            boolean operatesNonStop,
+            int totalSpots,
+            int availableSpots,
+            double loadPercentage
     ) {
-        return new ParkingLotGeneralDetailsDto(id, name, operatingHours, operatingDays, isTemporaryClosed, operatesNonStop);
+        return new ParkingLotGeneralDetailsDto(id, name, operatingHours, operatingDays, isTemporaryClosed, operatesNonStop, totalSpots, availableSpots, loadPercentage);
     }
 
     @WithMockUser
     @Test
     void getAllParkingLots_ReturnsListOfParkingLotDTOs() throws Exception {
         List<ParkingLotGeneralDetailsDto> parkingLots = List.of(
-                createParkingLotDto(1L, "Endava Tower Parking Lot", "08:00 - 18:00", "Monday, Tuesday", false, false),
-                createParkingLotDto(2L, "Kaufland Parking Lot", "", "", false, true),
-                createParkingLotDto(3L, "N1 Hypermarket Parking Lot", "", "", true, false)
+                createParkingLotDto(1L, "Endava Tower Parking Lot", "08:00 - 18:00",  Arrays.asList("MONDAY", "TUESDAY"), false, false, 100, 90, 10.0),
+                createParkingLotDto(2L, "Kaufland Parking Lot", "", Collections.emptyList(), false, true, 200, 200, 0.0),
+                createParkingLotDto(3L, "N1 Hypermarket Parking Lot", "", Collections.emptyList(), true, false, 50, 10, 80.0)
         );
 
         when(parkingLotService.getAllParkingLots()).thenReturn(parkingLots);
@@ -136,23 +139,35 @@ class ParkingLotControllerTest {
                 .andExpect(jsonPath("$[0].parkingLotId").value(1L))
                 .andExpect(jsonPath("$[0].name").value("Endava Tower Parking Lot"))
                 .andExpect(jsonPath("$[0].operatingHours").value("08:00 - 18:00"))
-                .andExpect(jsonPath("$[0].operatingDays").value("Monday, Tuesday"))
+                .andExpect(jsonPath("$[0].operatingDays[0]").value("MONDAY"))
+                .andExpect(jsonPath("$[0].operatingDays[1]").value("TUESDAY"))
                 .andExpect(jsonPath("$[0].isTemporaryClosed").value(false))
                 .andExpect(jsonPath("$[0].operatesNonStop").value(false))
+                .andExpect(jsonPath("$[0].totalSpots").value(100))
+                .andExpect(jsonPath("$[0].availableSpots").value(90))
+                .andExpect(jsonPath("$[0].loadPercentage").value(10.0))
+
                 .andExpect(jsonPath("$[1].parkingLotId").value(2L))
                 .andExpect(jsonPath("$[1].name").value("Kaufland Parking Lot"))
                 .andExpect(jsonPath("$[1].isTemporaryClosed").value(false))
                 .andExpect(jsonPath("$[1].operatesNonStop").value(true))
+                .andExpect(jsonPath("$[1].totalSpots").value(200))
+                .andExpect(jsonPath("$[1].availableSpots").value(200))
+                .andExpect(jsonPath("$[1].loadPercentage").value(0.0))
+
                 .andExpect(jsonPath("$[2].parkingLotId").value(3L))
                 .andExpect(jsonPath("$[2].name").value("N1 Hypermarket Parking Lot"))
                 .andExpect(jsonPath("$[2].isTemporaryClosed").value(true))
-                .andExpect(jsonPath("$[2].operatesNonStop").value(false));
+                .andExpect(jsonPath("$[2].operatesNonStop").value(false))
+                .andExpect(jsonPath("$[2].totalSpots").value(50))
+                .andExpect(jsonPath("$[2].availableSpots").value(10))
+                .andExpect(jsonPath("$[2].loadPercentage").value(80.0));
     }
 
     @WithMockUser
     @Test
     void getAllParkingLots_ReturnsEmptyList_WhenNoParkingLotsAvailable() throws Exception {
-        when(parkingLotService.getAllParkingLots()).thenReturn(Arrays.asList());
+        when(parkingLotService.getAllParkingLots()).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/parking-lots"))
                 .andExpect(status().isOk())

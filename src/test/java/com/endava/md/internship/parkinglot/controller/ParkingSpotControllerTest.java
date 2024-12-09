@@ -28,12 +28,12 @@ import java.util.List;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static com.endava.md.internship.parkinglot.utils.ParkingLotDTOUtils.getPreparedParkingLotResponseDto;
+import static com.endava.md.internship.parkinglot.utils.ParkingLotDTOUtils.getPreparedParkingSpotRequestDto;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 
 @WebMvcTest(controllers = ParkingSpotController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -54,9 +54,6 @@ class ParkingSpotControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Test
     void testParkingSpotController_WhenParking() throws Exception {

@@ -2,6 +2,8 @@ package com.endava.md.internship.parkinglot.utils;
 
 import com.endava.md.internship.parkinglot.model.ParkingLevel;
 import com.endava.md.internship.parkinglot.model.ParkingLot;
+import com.endava.md.internship.parkinglot.model.ParkingLotUser;
+import com.endava.md.internship.parkinglot.model.ParkingLotUserId;
 import com.endava.md.internship.parkinglot.model.ParkingSpot;
 import com.endava.md.internship.parkinglot.model.WorkingDay;
 
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.endava.md.internship.parkinglot.model.ParkingSpotType.REGULAR;
+import static com.endava.md.internship.parkinglot.utils.UserUtils.getPreparedUser;
 import static java.time.DayOfWeek.MONDAY;
 
 public class ParkingLotUtils {
@@ -92,5 +95,16 @@ public class ParkingLotUtils {
         parkingSpot.setParkingLevel(preparedParkingLevel);
 
         return parkingSpot;
+    }
+
+    public static ParkingLotUser getParkingLotUser() {
+        return new ParkingLotUser(
+                getParkingLotUserId(),
+                getPreparedUser(),
+                getPreparedParkingLot());
+    }
+
+    public static ParkingLotUserId getParkingLotUserId() {
+        return new ParkingLotUserId(1L, 1L);
     }
 }

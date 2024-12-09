@@ -45,6 +45,12 @@ class CustomExceptionHandlerTest {
     @Mock
     private ParkingSpotNotFoundException parkingSpotNotFoundException;
 
+    @Mock
+    private ParkingSpotClosedException parkingSpotClosedException;
+
+    @Mock
+    private UserAlreadyHasParkingSpotException userAlreadyHasParkingSpotException;
+
     @InjectMocks
     CustomExceptionHandler exceptionHandler;
 
@@ -74,6 +80,12 @@ class CustomExceptionHandlerTest {
 
     @Value("${message.parking-spot-not-found}")
     private int parkingSpotNotFoundErrorCode;
+
+    @Value("${message.user-has-parking-spot}")
+    private int userHasParkingSpotErrorCode;
+
+    @Value("${message.inaccessible-parking-spot}")
+    private int parkingSpotClosedErrorCode;
 
     @Test
     void handleValidationExceptionsTest() {
@@ -179,7 +191,7 @@ class CustomExceptionHandlerTest {
         serverErrorField.set(exceptionHandler, occupiedParkingSpotErrorCode);
 
         occupiedParkingSpotException = new OccupiedParkingSpotException("Parking Spot is Occupied!");
-        ResponseEntity<ResponseDTO> response =
+        ResponseEntity<ResponseGenericErrorDTO> response =
                 exceptionHandler.handleOccupiedParkingSpotException(occupiedParkingSpotException);
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isSuccess());
@@ -193,10 +205,38 @@ class CustomExceptionHandlerTest {
         serverErrorField.set(exceptionHandler, parkingSpotNotFoundErrorCode);
 
         parkingSpotNotFoundException = new ParkingSpotNotFoundException("Parking Spot is Not Found!");
-        ResponseEntity<ResponseDTO> response =
+        ResponseEntity<ResponseGenericErrorDTO> response =
                 exceptionHandler.handleParkingSpotNotFoundException(parkingSpotNotFoundException);
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isSuccess());
         assertThat(response.getBody().getError()).containsExactly(parkingSpotNotFoundErrorCode);
+    }
+
+    @Test
+    void handleParkingSpotClosedExceptionTest() throws NoSuchFieldException, IllegalAccessException {
+        Field serverErrorField = CustomExceptionHandler.class.getDeclaredField("inaccessibleParkingSpot");
+        serverErrorField.setAccessible(true);
+        serverErrorField.set(exceptionHandler, parkingSpotClosedErrorCode);
+
+        parkingSpotClosedException = new ParkingSpotClosedException("Parking spot is temporary closed!");
+        ResponseEntity<ResponseGenericErrorDTO> response =
+                exceptionHandler.handleParkingSpotClosedException(parkingSpotClosedException);
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().isSuccess());
+        assertThat(response.getBody().getError()).containsExactly(parkingSpotClosedErrorCode);
+    }
+
+    @Test
+    void handleUserAlreadyHasParkingSpotExceptionExceptionTest() throws NoSuchFieldException, IllegalAccessException {
+        Field serverErrorField = CustomExceptionHandler.class.getDeclaredField("userHasParkingSpot");
+        serverErrorField.setAccessible(true);
+        serverErrorField.set(exceptionHandler, userHasParkingSpotErrorCode);
+
+        userAlreadyHasParkingSpotException = new UserAlreadyHasParkingSpotException("User has already parking spot!");
+        ResponseEntity<ResponseGenericErrorDTO> response =
+                exceptionHandler.handleUserAlreadyHasParkingSpotExceptionException(userAlreadyHasParkingSpotException);
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().isSuccess());
+        assertThat(response.getBody().getError()).containsExactly(userHasParkingSpotErrorCode);
     }
 }

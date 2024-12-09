@@ -44,17 +44,21 @@ public class CustomExceptionHandler {
     @Value("${message.parking-spot-not-found}")
     private int parkingSpotNotFound;
 
+    @Value("${message.user-has-parking-spot}")
+    private int userHasParkingSpot;
+
     @Value("${message.user-not-assigned}")
     private int userNotAssigned;
 
     @Value("${message.user-already-assigned}")
     private int userAlreadyAssigned;
 
+    @Value("${message.inaccessible-parking-spot}")
+    private int inaccessibleParkingSpot;
+
     @Value("${message.send-email-error}")
     private int emailSendingError;
 
-    @Value("${message.user-has-parking-spot}")
-    private int userHasParkingSpot;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseDTO> handleValidationExceptions(MethodArgumentNotValidException exception) {
@@ -95,6 +99,12 @@ public class CustomExceptionHandler {
         return ResponseFactory.createResponse(parkingLotNotFound);
     }
 
+    @ExceptionHandler(ParkingSpotClosedException.class)
+    public ResponseEntity<ResponseGenericErrorDTO> handleParkingSpotClosedException(ParkingSpotClosedException exception) {
+        log.error(exception.getMessage());
+        return ResponseFactory.createResponse(inaccessibleParkingSpot);
+    }
+
     @ExceptionHandler(UserAlreadyHasParkingSpotException.class)
     public ResponseEntity<ResponseGenericErrorDTO> handleUserAlreadyHasParkingSpotExceptionException(final UserAlreadyHasParkingSpotException exception) {
         log.error(exception.getMessage());
@@ -102,21 +112,21 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(OccupiedParkingSpotException.class)
-    public ResponseEntity<ResponseDTO> handleOccupiedParkingSpotException(
+    public ResponseEntity<ResponseGenericErrorDTO> handleOccupiedParkingSpotException(
             OccupiedParkingSpotException occupiedParkingSpotException
     ) {
         log.error(occupiedParkingSpotException.getMessage());
 
-        return ResponseFactory.createResponse(Set.of(occupiedParkingSpot));
+        return ResponseFactory.createResponse(occupiedParkingSpot);
     }
 
     @ExceptionHandler(ParkingSpotNotFoundException.class)
-    public ResponseEntity<ResponseDTO> handleParkingSpotNotFoundException(
+    public ResponseEntity<ResponseGenericErrorDTO> handleParkingSpotNotFoundException(
             ParkingSpotNotFoundException parkingSpotNotFoundException
     ) {
         log.error(parkingSpotNotFoundException.getMessage());
 
-        return ResponseFactory.createResponse(Set.of(parkingSpotNotFound));
+        return ResponseFactory.createResponse(parkingSpotNotFound);
     }
 
     @ExceptionHandler(UserAlreadyAssignedException.class)

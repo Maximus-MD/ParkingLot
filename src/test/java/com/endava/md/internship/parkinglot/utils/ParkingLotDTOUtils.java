@@ -146,5 +146,4 @@ public class ParkingLotDTOUtils {
                 Map.of("A", 10)
         );
     }
-
 }

@@ -24,8 +24,6 @@ public class GlobalSecurityFilterConfig {
 
     private static final String ROLE_ADMIN = "ROLE_ADMIN";
 
-    private static final String ROLE_REGULAR = "ROLE_REGULAR";
-
     private final JWTRequestFilter jwtRequestFilter;
 
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;

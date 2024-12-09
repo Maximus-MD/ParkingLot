@@ -5,10 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 
 public record ParkingSpotDto(
 
-        @NotBlank
+        @NotBlank(message = "${message.empty-parking-name}")
         String parkingName,
 
-        @NotBlank
+        @NotBlank(message = "${message.empty-parking-spot}")
         String spotName,
 
         @NotBlank

@@ -39,6 +39,12 @@ class CustomExceptionHandlerTest {
     @Mock
     private ParkingLotException parkingLotException;
 
+    @Mock
+    private OccupiedParkingSpotException occupiedParkingSpotException;
+
+    @Mock
+    private ParkingSpotNotFoundException parkingSpotNotFoundException;
+
     @InjectMocks
     CustomExceptionHandler exceptionHandler;
 
@@ -62,6 +68,12 @@ class CustomExceptionHandlerTest {
 
     @Value("${message.parking-not-found}")
     private int parkingNotFoundCode;
+
+    @Value("${message.occupied-parking-spot}")
+    private int occupiedParkingSpotErrorCode;
+
+    @Value("${message.parking-spot-not-found}")
+    private int parkingSpotNotFoundErrorCode;
 
     @Test
     void handleValidationExceptionsTest() {
@@ -158,5 +170,33 @@ class CustomExceptionHandlerTest {
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isSuccess());
         assertThat(response.getBody().getError()).containsExactly(serverErrorCode);
+    }
+
+    @Test
+    void handleOccupiedParkingSpotExceptionTest() throws NoSuchFieldException, IllegalAccessException {
+        Field serverErrorField = CustomExceptionHandler.class.getDeclaredField("occupiedParkingSpot");
+        serverErrorField.setAccessible(true);
+        serverErrorField.set(exceptionHandler, occupiedParkingSpotErrorCode);
+
+        occupiedParkingSpotException = new OccupiedParkingSpotException("Parking Spot is Occupied!");
+        ResponseEntity<ResponseDTO> response =
+                exceptionHandler.handleOccupiedParkingSpotException(occupiedParkingSpotException);
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().isSuccess());
+        assertThat(response.getBody().getError()).containsExactly(occupiedParkingSpotErrorCode);
+    }
+
+    @Test
+    void handleParkingSpotNotFoundExceptionTest() throws NoSuchFieldException, IllegalAccessException {
+        Field serverErrorField = CustomExceptionHandler.class.getDeclaredField("parkingSpotNotFound");
+        serverErrorField.setAccessible(true);
+        serverErrorField.set(exceptionHandler, parkingSpotNotFoundErrorCode);
+
+        parkingSpotNotFoundException = new ParkingSpotNotFoundException("Parking Spot is Not Found!");
+        ResponseEntity<ResponseDTO> response =
+                exceptionHandler.handleParkingSpotNotFoundException(parkingSpotNotFoundException);
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().isSuccess());
+        assertThat(response.getBody().getError()).containsExactly(parkingSpotNotFoundErrorCode);
     }
 }

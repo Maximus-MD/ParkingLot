@@ -13,6 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -53,4 +57,9 @@ public class ParkingSpotServiceImpl implements ParkingSpotService {
         );
 
     }
+
+    public List<String> getAllParkingSpotTypes() {
+        return Arrays.stream(ParkingSpotType.values()).map(Enum::name).toList();
+    }
 }
+

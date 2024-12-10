@@ -16,6 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -104,4 +106,12 @@ class ParkingSpotServiceImplTest {
                 .isInstanceOf(ParkingSpotNotFoundException.class);
     }
 
+    @Test
+    void when_GetAllParkingSpotTypesMethodWasCalled_Expect_ParkingSpotTypesList(){
+        List<String> expectedParkingSpotTypesList = Arrays.stream(ParkingSpotType.values()).map(Enum::name).toList();
+
+        List<String> actualParkingSpotTypesList = parkingSpotServiceImpl.getAllParkingSpotTypes();
+
+        assertThat(actualParkingSpotTypesList).isEqualTo(expectedParkingSpotTypesList);
+    }
 }

@@ -6,9 +6,11 @@ import com.endava.md.internship.parkinglot.dto.ParkingLotResponseDto;
 import com.endava.md.internship.parkinglot.exception.ParkingLotException;
 import com.endava.md.internship.parkinglot.model.ParkingLevel;
 import com.endava.md.internship.parkinglot.model.ParkingLot;
+import com.endava.md.internship.parkinglot.model.ParkingSpot;
 import com.endava.md.internship.parkinglot.model.WorkingDay;
 import com.endava.md.internship.parkinglot.repository.ParkingLevelRepository;
 import com.endava.md.internship.parkinglot.repository.ParkingLotRepository;
+import com.endava.md.internship.parkinglot.repository.ParkingSpotRepository;
 import com.endava.md.internship.parkinglot.repository.WorkingDayRepository;
 import com.endava.md.internship.parkinglot.utils.ParkingLotDTOUtils;
 import com.endava.md.internship.parkinglot.utils.ParkingLotUtils;
@@ -78,11 +80,19 @@ class ParkingLotServiceTest {
     @Mock
     private EmailSenderService emailSenderService;
 
+    @Mock
+    private ParkingSpot parkingSpot;
+
+    @Mock
+    private ParkingSpotRepository parkingSpotRepository;
+
     @InjectMocks
     private ParkingLotServiceImpl parkingLotService;
 
     private User testUser;
     private ParkingLot testParkingLot;
+
+
 
     @BeforeEach
     void setUp() {
@@ -176,18 +186,12 @@ class ParkingLotServiceTest {
         verify(parkingLotRepository).delete(parkingLot);
     }
 
-    private ParkingLotGeneralDetailsDto createParkingLotListDto(Long id, String name, String workingHours, String workingDays, boolean isTemporaryClosed, boolean operatesNonStop) {
-        return new ParkingLotGeneralDetailsDto(id, name, workingHours, workingDays, isTemporaryClosed, operatesNonStop);
-    }
-
     @Test
     void getAllParkingLots_ReturnsEmptyList_whenNoParkingLotsInDatabase() {
         when(parkingLotRepository.findAll()).thenReturn(new ArrayList<>());
-
         List<ParkingLotGeneralDetailsDto> result = parkingLotService.getAllParkingLots();
-
-        assertNotNull(result, "Result should not be null");
-        assertTrue(result.isEmpty(), "The result list should be empty");
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 
     @Test
@@ -197,21 +201,15 @@ class ParkingLotServiceTest {
         lot.setName("Endava Tower Parking Lot");
         lot.setStartTime(Time.valueOf("08:00:00"));
         lot.setEndTime(Time.valueOf("18:00:00"));
-        lot.setWorkingDays(Arrays.asList(
-                createWorkingDay(DayOfWeek.MONDAY),
-                createWorkingDay(DayOfWeek.TUESDAY)
-        ));
+        lot.setWorkingDays(Arrays.asList(createWorkingDay(DayOfWeek.MONDAY), createWorkingDay(DayOfWeek.TUESDAY)));
         lot.setOperatesNonStop(false);
         lot.setTemporaryClosed(false);
 
         when(parkingLotRepository.findAll()).thenReturn(Collections.singletonList(lot));
-
         List<ParkingLotGeneralDetailsDto> result = parkingLotService.getAllParkingLots();
-
         assertNotNull(result);
         assertEquals(1, result.size());
-
-        ParkingLotGeneralDetailsDto expectedDto = createParkingLotListDto(1L, "Endava Tower Parking Lot", "08:00 - 18:00", "MONDAY/TUESDAY", false, false);
+        ParkingLotGeneralDetailsDto expectedDto = createParkingLotListDto(1L, "Endava Tower Parking Lot", "08:00 - 18:00", "MONDAY/TUESDAY", false, false, 0, 0, 0.0);
         assertEquals(expectedDto, result.get(0));
     }
 
@@ -224,38 +222,26 @@ class ParkingLotServiceTest {
         lot.setTemporaryClosed(false);
 
         when(parkingLotRepository.findAll()).thenReturn(Collections.singletonList(lot));
-
         List<ParkingLotGeneralDetailsDto> result = parkingLotService.getAllParkingLots();
-
         assertNotNull(result);
         assertEquals(1, result.size());
-
-        ParkingLotGeneralDetailsDto expectedDto = createParkingLotListDto(2L, "Kaufland Parking Lot", "", "", false, true);
+        ParkingLotGeneralDetailsDto expectedDto = createParkingLotListDto(2L, "Kaufland Parking Lot", "", "", false, true, 0, 0, 0.0);
         assertEquals(expectedDto, result.get(0));
     }
 
     @Test
-    void getAll_whenParkingLots_ReturnsIsTemporarilyClosed_WhenParkingLotIsTemporaryClosed () {
+    void getAll_whenParkingLots_ReturnsIsTemporarilyClosed_WhenParkingLotIsTemporaryClosed() {
         ParkingLot lot = new ParkingLot();
         lot.setParkingLotId(3L);
         lot.setName("N1 Hypermarket Parking Lot");
         lot.setTemporaryClosed(true);
 
         when(parkingLotRepository.findAll()).thenReturn(Collections.singletonList(lot));
-
         List<ParkingLotGeneralDetailsDto> result = parkingLotService.getAllParkingLots();
-
         assertNotNull(result);
         assertEquals(1, result.size());
-
-        ParkingLotGeneralDetailsDto expectedDto = createParkingLotListDto(3L, "N1 Hypermarket Parking Lot", "", "", true, false);
+        ParkingLotGeneralDetailsDto expectedDto = createParkingLotListDto(3L, "N1 Hypermarket Parking Lot", "", "", true, false, 0, 0, 0.0);
         assertEquals(expectedDto, result.get(0));
-    }
-
-    private WorkingDay createWorkingDay(DayOfWeek dayOfWeek) {
-        WorkingDay workingDay = new WorkingDay();
-        workingDay.setDayName(dayOfWeek);
-        return workingDay;
     }
 
     @Test
@@ -270,14 +256,67 @@ class ParkingLotServiceTest {
         lot.setTemporaryClosed(false);
 
         when(parkingLotRepository.findAll()).thenReturn(Collections.singletonList(lot));
+        List<ParkingLotGeneralDetailsDto> result = parkingLotService.getAllParkingLots();
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        ParkingLotGeneralDetailsDto expectedDto = createParkingLotListDto(4L, "Empty Days Parking Lot", "08:00 - 18:00", "", false, false, 0, 0, 0.0);
+        assertEquals(expectedDto, result.get(0));
+    }
+
+    @Test
+    void getAllParkingLots_CalculatesSpotsAndLoadPercentage() {
+        ParkingLot lot = new ParkingLot();
+        lot.setParkingLotId(5L);
+        lot.setName("Endava Tower Parking Lot");
+        lot.setOperatesNonStop(false);
+        lot.setTemporaryClosed(false);
+
+        ParkingLevel level = new ParkingLevel();
+        level.setLevelName("L1");
+
+        ParkingSpot spot1 = new ParkingSpot();
+        spot1.setOccupied(false);
+        ParkingSpot spot2 = new ParkingSpot();
+        spot2.setOccupied(true);
+        ParkingSpot spot3 = new ParkingSpot();
+        spot3.setOccupied(false);
+        level.setParkingSpots(Arrays.asList(spot1, spot2, spot3));
+        lot.setParkingLevels(Collections.singletonList(level));
+
+        when(parkingLotRepository.findAll()).thenReturn(Collections.singletonList(lot));
+
+        when(parkingSpotRepository.countByParkingLevelAndOccupied(level, true)).thenReturn(1);
 
         List<ParkingLotGeneralDetailsDto> result = parkingLotService.getAllParkingLots();
 
         assertNotNull(result);
         assertEquals(1, result.size());
+        ParkingLotGeneralDetailsDto dto = result.get(0);
+        assertEquals(3, dto.totalSpots());
+        assertEquals(2, dto.availableSpots()); // totalSpots - occupiedSpots
+        assertEquals((1 * 100.0) / 3, dto.loadPercentage(), 0.001); // Check the load percentage calculation
+    }
 
-        ParkingLotGeneralDetailsDto expectedDto = createParkingLotListDto(4L, "Empty Days Parking Lot", "08:00 - 18:00", "", false, false);
-        assertEquals(expectedDto, result.get(0));
+
+    private WorkingDay createWorkingDay(DayOfWeek dayOfWeek) {
+        WorkingDay workingDay = new WorkingDay();
+        workingDay.setDayName(dayOfWeek);
+        return workingDay;
+    }
+
+    private ParkingLotGeneralDetailsDto createParkingLotListDto(Long id, String name, String workingHours, String workingDays, boolean isTemporaryClosed, boolean operatesNonStop, int totalSpots, int availableSpots, double loadPercentage) {
+        List<String> daysList = workingDays.isEmpty() ? Collections.emptyList() : Arrays.asList(workingDays.split("/"));
+        return new ParkingLotGeneralDetailsDto(
+                id,
+                name,
+                workingHours,
+                daysList,
+                isTemporaryClosed,
+                operatesNonStop,
+                totalSpots,
+                availableSpots,
+                loadPercentage
+        );
     }
 
     @Test

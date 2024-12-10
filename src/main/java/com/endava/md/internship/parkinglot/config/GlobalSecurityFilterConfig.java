@@ -16,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
 @Slf4j
 @RequiredArgsConstructor
 @Configuration
@@ -26,6 +25,7 @@ public class GlobalSecurityFilterConfig {
     private static final String ROLE_ADMIN = "ROLE_ADMIN";
 
     private final JWTRequestFilter jwtRequestFilter;
+
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
@@ -36,6 +36,7 @@ public class GlobalSecurityFilterConfig {
                         .requestMatchers(HttpMethod.POST, "/register", "/login").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/restore-password").permitAll()
                         .requestMatchers(HttpMethod.GET, "/actuator/health", "/favicon.ico").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/parking-spots/reserve-spot").authenticated()
                         .requestMatchers(HttpMethod.POST, "/parking-lots/create","/{parkingLotId}/users/{userId}").hasAuthority(ROLE_ADMIN)
                         .requestMatchers(HttpMethod.PATCH, "/parking-spots/change-type/{id}").hasAuthority(ROLE_ADMIN)
                         .requestMatchers(HttpMethod.DELETE, "/parking-lots/delete/**","/{parkingLotId}/users/{userId}").hasAuthority(ROLE_ADMIN)

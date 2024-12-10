@@ -15,7 +15,6 @@ import com.endava.md.internship.parkinglot.repository.WorkingDayRepository;
 import com.endava.md.internship.parkinglot.utils.ParkingLotDTOUtils;
 import com.endava.md.internship.parkinglot.utils.ParkingLotUtils;
 import com.endava.md.internship.parkinglot.exception.EmailSendException;
-import com.endava.md.internship.parkinglot.exception.ParkingLotNotFoundException;
 import com.endava.md.internship.parkinglot.exception.UserAlreadyAssignedException;
 import com.endava.md.internship.parkinglot.exception.UserNotAssignedException;
 import com.endava.md.internship.parkinglot.exception.UserNotFoundException;
@@ -347,7 +346,7 @@ class ParkingLotServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(parkingLotRepository.findById(999L)).thenReturn(Optional.empty());
 
-        assertThrows(ParkingLotNotFoundException.class, () -> parkingLotService.addUserToParkingLot(1L, 999L));
+        assertThrows(ParkingLotException.class, () -> parkingLotService.addUserToParkingLot(1L, 999L));
         verifyNoInteractions(emailSenderService);
     }
 
@@ -406,7 +405,7 @@ class ParkingLotServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(parkingLotRepository.findById(999L)).thenReturn(Optional.empty());
 
-        assertThrows(ParkingLotNotFoundException.class, () -> parkingLotService.removeUserFromParkingLot(1L, 999L));
+        assertThrows(ParkingLotException.class, () -> parkingLotService.removeUserFromParkingLot(1L, 999L));
         verifyNoInteractions(emailSenderService);
     }
 

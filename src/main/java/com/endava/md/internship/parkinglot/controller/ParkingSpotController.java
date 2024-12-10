@@ -1,5 +1,7 @@
 package com.endava.md.internship.parkinglot.controller;
 
+import com.endava.md.internship.parkinglot.dto.ParkingLotResponseDto;
+import com.endava.md.internship.parkinglot.dto.ParkingSpotDto;
 import com.endava.md.internship.parkinglot.dto.ParkingSpotTypeDto;
 import com.endava.md.internship.parkinglot.dto.ParkingSpotResponseDto;
 import com.endava.md.internship.parkinglot.service.ParkingSpotService;
@@ -22,6 +24,13 @@ import java.util.List;
 public class ParkingSpotController {
 
     private final ParkingSpotService parkingSpotService;
+
+    @PatchMapping("/reserve-spot")
+    public ResponseEntity<ParkingLotResponseDto> reserveParkingSpot(@Valid @RequestBody ParkingSpotDto parkingSpotDto){
+        ParkingLotResponseDto response = parkingSpotService.occupyParkingSpot(parkingSpotDto);
+
+        return ResponseEntity.ok(response);
+    }
 
     @PatchMapping("/change-type/{id}")
     public ResponseEntity<ParkingSpotResponseDto> changeParkingSpotType(

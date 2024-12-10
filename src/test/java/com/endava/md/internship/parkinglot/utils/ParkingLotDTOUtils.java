@@ -2,6 +2,7 @@ package com.endava.md.internship.parkinglot.utils;
 
 import com.endava.md.internship.parkinglot.dto.ParkingLotRequestDto;
 import com.endava.md.internship.parkinglot.dto.ParkingLotResponseDto;
+import com.endava.md.internship.parkinglot.dto.ParkingSpotDto;
 import com.endava.md.internship.parkinglot.dto.WorkingDayDto;
 
 import java.sql.Time;
@@ -105,6 +106,14 @@ public class ParkingLotDTOUtils {
         );
     }
 
+    public static ParkingSpotDto getPreparedParkingSpotRequestDto() {
+        return new ParkingSpotDto(
+                "Kaufland",
+                "A-001",
+                "Alex@gmail.com"
+        );
+    }
+
     public static ParkingLotResponseDto getPreparedParkingLotResponseDto() {
         return new ParkingLotResponseDto(
                 true,
@@ -137,5 +146,4 @@ public class ParkingLotDTOUtils {
                 Map.of("A", 10)
         );
     }
-
 }

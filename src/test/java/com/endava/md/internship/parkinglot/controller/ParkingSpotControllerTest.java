@@ -3,12 +3,16 @@ package com.endava.md.internship.parkinglot.controller;
 import com.endava.md.internship.parkinglot.dto.ParkingSpotResponseDto;
 import com.endava.md.internship.parkinglot.dto.ParkingSpotTypeDto;
 import com.endava.md.internship.parkinglot.model.ParkingSpotType;
+import com.endava.md.internship.parkinglot.dto.ParkingLotResponseDto;
+import com.endava.md.internship.parkinglot.dto.ParkingSpotDto;
 import com.endava.md.internship.parkinglot.security.JWTService;
 import com.endava.md.internship.parkinglot.security.JWTUtils;
 import com.endava.md.internship.parkinglot.service.ParkingSpotService;
 import com.endava.md.internship.parkinglot.utils.ParkingSpotResponseDTOUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -16,19 +20,24 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static com.endava.md.internship.parkinglot.utils.ParkingLotDTOUtils.getPreparedParkingLotResponseDto;
+import static com.endava.md.internship.parkinglot.utils.ParkingLotDTOUtils.getPreparedParkingSpotRequestDto;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @WebMvcTest(controllers = ParkingSpotController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@ExtendWith(MockitoExtension.class)
 class ParkingSpotControllerTest {
 
     @MockitoBean
@@ -45,6 +54,23 @@ class ParkingSpotControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Test
+    void testParkingSpotController_WhenParking() throws Exception {
+        ParkingSpotDto requestDto = getPreparedParkingSpotRequestDto();
+        ParkingLotResponseDto responseDto = getPreparedParkingLotResponseDto();
+
+        when(parkingSpotService.occupyParkingSpot(any())).thenReturn(responseDto);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("/parking-spots/reserve-spot")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto)))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error").isEmpty());
+    }
 
     @Test
     void should_ReturnParkingSpotWithChangedType_When_RequestContainsNewCorrectParkingSpotType() throws Exception {

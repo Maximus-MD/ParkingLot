@@ -3,7 +3,7 @@ package com.endava.md.internship.parkinglot.controller;
 import com.endava.md.internship.parkinglot.dto.LoginRequestDto;
 import com.endava.md.internship.parkinglot.service.AuthService;
 import com.endava.md.internship.parkinglot.utils.ResponseDTOUtils;
-import com.endava.md.internship.parkinglot.utils.TokenUtils;
+import com.endava.md.internship.parkinglot.utils.swagger.TokenUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

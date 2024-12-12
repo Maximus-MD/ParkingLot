@@ -12,7 +12,7 @@ import com.endava.md.internship.parkinglot.security.JWTService;
 import com.endava.md.internship.parkinglot.security.JWTUtils;
 import com.endava.md.internship.parkinglot.service.UserService;
 import com.endava.md.internship.parkinglot.utils.RegistrationDTOUtils;
-import com.endava.md.internship.parkinglot.utils.TokenUtils;
+import com.endava.md.internship.parkinglot.utils.swagger.TokenUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -4,7 +4,7 @@ import com.endava.md.internship.parkinglot.exception.CustomAuthException;
 import com.endava.md.internship.parkinglot.model.User;
 import com.endava.md.internship.parkinglot.repository.UserRepository;
 import com.endava.md.internship.parkinglot.utils.RoleUtils;
-import com.endava.md.internship.parkinglot.utils.TokenUtils;
+import com.endava.md.internship.parkinglot.utils.swagger.TokenUtils;
 import com.endava.md.internship.parkinglot.utils.UserUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

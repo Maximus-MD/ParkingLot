@@ -23,7 +23,7 @@ import com.endava.md.internship.parkinglot.security.JWTService;
 import com.endava.md.internship.parkinglot.service.impl.UserServiceImpl;
 import com.endava.md.internship.parkinglot.utils.RegistrationDTOUtils;
 import com.endava.md.internship.parkinglot.utils.RoleUtils;
-import com.endava.md.internship.parkinglot.utils.TokenUtils;
+import com.endava.md.internship.parkinglot.utils.swagger.TokenUtils;
 import com.endava.md.internship.parkinglot.utils.UserUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

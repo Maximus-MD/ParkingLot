@@ -3,7 +3,7 @@ package com.endava.md.internship.parkinglot.security;
 import com.endava.md.internship.parkinglot.dto.LoginRequestDto;
 import com.endava.md.internship.parkinglot.model.User;
 import com.endava.md.internship.parkinglot.utils.ResponseDTOUtils;
-import com.endava.md.internship.parkinglot.utils.TokenUtils;
+import com.endava.md.internship.parkinglot.utils.swagger.TokenUtils;
 import com.endava.md.internship.parkinglot.utils.UserUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
